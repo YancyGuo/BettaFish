@@ -202,7 +202,17 @@ class ZhiHuClient(AbstractApiClient):
         }
         search_res = await self.get(uri, params)
         utils.logger.info(f"[ZhiHuClient.get_note_by_keyword] Search result: {search_res}")
-        return self._extractor.extract_contents_from_search(search_res)
+
+        try:
+            result = self._extractor.extract_contents_from_search(search_res)
+            utils.logger.info(f"[ZhiHuClient.get_note_by_keyword] Extracted {len(result)} contents")
+            return result
+        except Exception as e:
+            utils.logger.error(f"[ZhiHuClient.get_note_by_keyword] Error extracting contents: {e}")
+            utils.logger.error(f"[ZhiHuClient.get_note_by_keyword] Exception type: {type(e).__name__}")
+            import traceback
+            utils.logger.error(f"[ZhiHuClient.get_note_by_keyword] Traceback: {traceback.format_exc()}")
+            return []
 
     async def get_root_comments(
         self,

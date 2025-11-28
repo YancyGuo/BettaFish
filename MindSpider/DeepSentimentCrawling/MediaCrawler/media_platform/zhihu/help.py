@@ -60,8 +60,22 @@ class ZhihuExtractor:
             return []
 
         search_result: List[Dict] = json_data.get("data", [])
+        utils.logger.debug(f"[extract_contents_from_search] Raw search result count: {len(search_result)}")
+
         search_result = [s_item for s_item in search_result if s_item.get("type") in ['search_result', 'zvideo']]
-        return self._extract_content_list([sr_item.get("object") for sr_item in search_result if sr_item.get("object")])
+        utils.logger.debug(f"[extract_contents_from_search] Filtered search result count: {len(search_result)}")
+
+        objects = [sr_item.get("object") for sr_item in search_result if sr_item.get("object")]
+        utils.logger.debug(f"[extract_contents_from_search] Objects count: {len(objects)}")
+
+        if objects:
+            utils.logger.debug(f"[extract_contents_from_search] First object type: {objects[0].get('type')}")
+            utils.logger.debug(f"[extract_contents_from_search] Expected types: {zhihu_constant.ANSWER_NAME}, {zhihu_constant.ARTICLE_NAME}, {zhihu_constant.VIDEO_NAME}")
+
+        result = self._extract_content_list(objects)
+        utils.logger.debug(f"[extract_contents_from_search] Final extracted content count: {len(result)}")
+
+        return result
 
 
     def _extract_content_list(self, content_list: List[Dict]) -> List[ZhihuContent]:
@@ -74,18 +88,29 @@ class ZhihuExtractor:
 
         """
         if not content_list:
+            utils.logger.debug("[_extract_content_list] Content list is empty")
             return []
 
+        utils.logger.debug(f"[_extract_content_list] Processing {len(content_list)} content items")
         res: List[ZhihuContent] = []
-        for content in content_list:
-            if content.get("type") == zhihu_constant.ANSWER_NAME:
+        for i, content in enumerate(content_list):
+            content_type = content.get("type")
+            utils.logger.debug(f"[_extract_content_list] Item {i}: type='{content_type}'")
+
+            if content_type == zhihu_constant.ANSWER_NAME:
+                utils.logger.debug(f"[_extract_content_list] Extracting answer content for item {i}")
                 res.append(self._extract_answer_content(content))
-            elif content.get("type") == zhihu_constant.ARTICLE_NAME:
+            elif content_type == zhihu_constant.ARTICLE_NAME:
+                utils.logger.debug(f"[_extract_content_list] Extracting article content for item {i}")
                 res.append(self._extract_article_content(content))
-            elif content.get("type") == zhihu_constant.VIDEO_NAME:
+            elif content_type == zhihu_constant.VIDEO_NAME:
+                utils.logger.debug(f"[_extract_content_list] Extracting video content for item {i}")
                 res.append(self._extract_zvideo_content(content))
             else:
+                utils.logger.debug(f"[_extract_content_list] Skipping item {i} with unknown type: {content_type}")
                 continue
+
+        utils.logger.debug(f"[_extract_content_list] Successfully extracted {len(res)} ZhihuContent objects")
         return res
 
     def _extract_answer_content(self, answer: Dict) -> ZhihuContent:
@@ -104,8 +129,11 @@ class ZhihuExtractor:
         res.content_url = f"{zhihu_constant.ZHIHU_URL}/question/{res.question_id}/answer/{res.content_id}"
         res.title = extract_text_from_html(answer.get("title", ""))
         res.desc = extract_text_from_html(answer.get("description", "") or answer.get("excerpt", ""))
-        res.created_time = answer.get("created_time")
-        res.updated_time = answer.get("updated_time")
+        # Convert timestamp to string for database compatibility
+        created_time = answer.get("created_time")
+        updated_time = answer.get("updated_time")
+        res.created_time = str(created_time) if created_time is not None else None
+        res.updated_time = str(updated_time) if updated_time is not None else None
         res.voteup_count = answer.get("voteup_count", 0)
         res.comment_count = answer.get("comment_count", 0)
 
@@ -134,8 +162,11 @@ class ZhihuExtractor:
         res.content_url = f"{zhihu_constant.ZHIHU_ZHUANLAN_URL}/p/{res.content_id}"
         res.title = extract_text_from_html(article.get("title"))
         res.desc = extract_text_from_html(article.get("excerpt"))
-        res.created_time = article.get("created_time", 0) or article.get("created", 0)
-        res.updated_time = article.get("updated_time", 0) or article.get("updated", 0)
+        # Convert timestamp to string for database compatibility
+        created_time = article.get("created_time", 0) or article.get("created", 0)
+        updated_time = article.get("updated_time", 0) or article.get("updated", 0)
+        res.created_time = str(created_time) if created_time is not None else None
+        res.updated_time = str(updated_time) if updated_time is not None else None
         res.voteup_count = article.get("voteup_count", 0)
         res.comment_count = article.get("comment_count", 0)
 
@@ -161,11 +192,17 @@ class ZhihuExtractor:
 
         if "video" in zvideo and isinstance(zvideo.get("video"), dict): # 说明是从创作者主页的视频列表接口来的
             res.content_url = f"{zhihu_constant.ZHIHU_URL}/zvideo/{res.content_id}"
-            res.created_time = zvideo.get("published_at")
-            res.updated_time = zvideo.get("updated_at")
+            # Convert timestamp to string for database compatibility
+            published_at = zvideo.get("published_at")
+            updated_at = zvideo.get("updated_at")
+            res.created_time = str(published_at) if published_at is not None else None
+            res.updated_time = str(updated_at) if updated_at is not None else None
         else:
             res.content_url = zvideo.get("video_url")
-            res.created_time = zvideo.get("created_at")
+            # Convert timestamp to string for database compatibility
+            created_at = zvideo.get("created_at")
+            res.created_time = str(created_at) if created_at is not None else None
+            res.updated_time = None
         res.content_id = zvideo.get("id")
         res.content_type = zvideo.get("type")
         res.title = extract_text_from_html(zvideo.get("title"))
@@ -241,9 +278,11 @@ class ZhihuExtractor:
         """
         res = ZhihuComment()
         res.comment_id = str(comment.get("id", ""))
-        res.parent_comment_id = comment.get("reply_comment_id")
+        res.parent_comment_id = str(comment.get("reply_comment_id")) if comment.get("reply_comment_id") else None
         res.content = extract_text_from_html(comment.get("content"))
-        res.publish_time = comment.get("created_time")
+        # Convert timestamp to string for database compatibility
+        publish_time = comment.get("created_time")
+        res.publish_time = str(publish_time) if publish_time is not None else None
         res.ip_location = self._extract_comment_ip_location(comment.get("comment_tag", []))
         res.sub_comment_count = comment.get("child_comment_count")
         res.like_count = comment.get("like_count") if comment.get("like_count") else 0

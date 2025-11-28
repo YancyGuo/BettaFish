@@ -18,7 +18,7 @@ from .time_util import *
 
 
 def init_loging_config():
-    level = logging.INFO
+    level = logging.DEBUG
     logging.basicConfig(
         level=level,
         format="%(asctime)s %(name)s %(levelname)s (%(filename)s:%(lineno)d) - %(message)s",
@@ -27,8 +27,8 @@ def init_loging_config():
     _logger = logging.getLogger("MediaCrawler")
     _logger.setLevel(level)
 
-    # 关闭 httpx 的 INFO 日志
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    # 关闭 httpx 的 INFO 日志，但保留 DEBUG
+    logging.getLogger("httpx").setLevel(logging.DEBUG)
 
     return _logger
 
