@@ -73,7 +73,7 @@ async def update_weibo_note(note_item: Dict):
     clean_text = re.sub(r"<.*?>", "", content_text)
     save_content_item = {
         # 微博信息
-        "note_id": note_id,
+        "note_id": int(note_id) if note_id else None,  # 转换为int以匹配数据库bigint类型
         "content": clean_text,
         "create_time": utils.rfc2822_to_timestamp(mblog.get("created_at")),
         "create_date_time": str(utils.rfc2822_to_china_datetime(mblog.get("created_at"))),
@@ -124,21 +124,21 @@ async def update_weibo_note_comment(note_id: str, comment_item: Dict):
     """
     if not comment_item or not note_id:
         return
-    comment_id = str(comment_item.get("id"))
+    comment_id = comment_item.get("id")
     user_info: Dict = comment_item.get("user")
     content_text = comment_item.get("text")
     clean_text = re.sub(r"<.*?>", "", content_text)
     save_comment_item = {
-        "comment_id": comment_id,
+        "comment_id": int(comment_id) if comment_id else None,  # 转换为int以匹配数据库bigint类型
         "create_time": utils.rfc2822_to_timestamp(comment_item.get("created_at")),
         "create_date_time": str(utils.rfc2822_to_china_datetime(comment_item.get("created_at"))),
-        "note_id": note_id,
+        "note_id": int(note_id),  # 转换为int以匹配数据库bigint类型
         "content": clean_text,
         "sub_comment_count": str(comment_item.get("total_number", 0)),
         "comment_like_count": str(comment_item.get("like_count", 0)),
         "last_modify_ts": utils.get_current_timestamp(),
         "ip_location": comment_item.get("source", "").replace("来自", ""),
-        "parent_comment_id": comment_item.get("rootid", ""),
+        "parent_comment_id": str(comment_item.get("rootid", "")) if comment_item.get("rootid") else None,
 
         # 用户信息
         "user_id": str(user_info.get("id")),
