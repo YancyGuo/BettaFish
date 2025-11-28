@@ -78,7 +78,7 @@ async def batch_update_ks_video_comments(video_id: str, comments: List[Dict]):
 async def update_ks_video_comment(video_id: str, comment_item: Dict):
     comment_id = comment_item.get("commentId")
     save_comment_item = {
-        "comment_id": comment_id,
+        "comment_id": int(comment_id) if comment_id else None,  # 转换为int以匹配数据库bigint类型
         "create_time": comment_item.get("timestamp"),
         "video_id": video_id,
         "content": comment_item.get("content"),
