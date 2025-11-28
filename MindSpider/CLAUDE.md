@@ -251,3 +251,24 @@ SELECT * FROM weibo_note_comment ORDER BY add_ts DESC LIMIT 5;
 
 ### 核心价值
 已成功建立稳定的多平台数据采集管道，能够满足舆论分析的核心需求。
+
+## 🎮 推荐执行指令
+
+### 游戏版本历史数据收集（推荐使用）
+```bash
+# 大规模深度分析 - 历史版本对比研究（月度执行）
+python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 5 --max-notes 20
+
+# 中等规模收集 - 版本稳定期深度分析（每周执行）
+python main.py --deep-sentiment --platforms wb zhihu --max-keywords 3 --max-notes 12
+
+# 小规模验证 - 版本发布后快速反应（24小时内执行）
+python main.py --deep-sentiment --platforms wb zhihu --max-keywords 2 --max-notes 8
+```
+
+### 预期数据质量
+- **微博**: 5×20 = 100条微博 + ~2000条评论
+- **知乎**: 5×10 = 50条知乎 + ~1000条评论
+- **快手**: 5×20 = 100条视频 + ~2000条评论
+- **总计**: ~250条内容 + ~5000条评论
+- **用时**: 3-5小时
