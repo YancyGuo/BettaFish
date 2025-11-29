@@ -46,7 +46,35 @@ UPDATE daily_topics SET keywords = '["星穹铁道X.X"]' WHERE topic_id = 'star_
 UPDATE daily_topics SET topic_name = '星穹铁道X.X版本' WHERE topic_id = 'star_rail_3_6';
 ```
 
-### 3. 平台特定问题
+### 3. 数据绑定问题 (topic_id关联)
+**问题**: 爬虫数据无法正确关联到具体项目，导致topic_id字段为NULL
+
+**发现时间**: 2025-11-29
+**影响范围**: 历史爬取数据存在大量未绑定情况
+
+**根本原因**:
+1. 爬虫保存逻辑中缺少topic_id字段设置
+2. 新爬取的数据没有自动关联到对应项目
+3. 历史数据存在162条未绑定记录
+
+**解决方案**:
+```sql
+-- 绑定绝区零2.3相关数据
+UPDATE zhihu_content SET topic_id = 'zzz_2_3'
+WHERE source_keyword LIKE '%绝区零%' OR source_keyword LIKE '%2.3%';
+
+-- 绑定星穹铁道3.7相关数据
+UPDATE zhihu_content SET topic_id = 'star_rail_3_7'
+WHERE source_keyword LIKE '%昔涟%' OR source_keyword LIKE '%3.7%';
+```
+
+**修复结果**:
+- ✅ 绝区零2.3: 302条数据，100%绑定率
+- ✅ 星穹铁道3.7: 187条数据，100%绑定率
+- ✅ 未绑定数据: 0条，已清理完毕
+- ✅ 总体绑定率: 从66.87%提升到100%
+
+### 4. 平台特定问题
 
 #### 抖音 (Douyin)
 - **状态**: 反爬虫升级，API返回200但数据为空
@@ -92,19 +120,22 @@ python main.py --platform [platform] --lt qrcode --type search --save_data_optio
 1. **检查日志**: 查看是否有ERROR或异常
 2. **验证数据保存**:
    ```sql
-   -- 检查各平台数据
-   SELECT COUNT(*) FROM zhihu_content WHERE source_keyword = '关键词';
-   SELECT COUNT(*) FROM kuaishou_video WHERE source_keyword = '关键词';
-   SELECT COUNT(*) FROM weibo_note WHERE source_keyword = '关键词';
-   SELECT COUNT(*) FROM douyin_aweme WHERE source_keyword = '关键词';
-   SELECT COUNT(*) FROM tieba_note WHERE source_keyword = '关键词';
+   -- 检查各平台数据 (使用topic_id)
+   SELECT COUNT(*) FROM zhihu_content WHERE topic_id = 'star_rail_3_7';
+   SELECT COUNT(*) FROM kuaishou_video WHERE topic_id = 'star_rail_3_7';
+   SELECT COUNT(*) FROM weibo_note WHERE topic_id = 'star_rail_3_7';
+   SELECT COUNT(*) FROM douyin_aweme WHERE topic_id = 'star_rail_3_7';
+   SELECT COUNT(*) FROM tieba_note WHERE topic_id = 'star_rail_3_7';
+
+   -- 或使用source_keyword检查特定关键词
+   SELECT COUNT(*) FROM weibo_note WHERE source_keyword = '星穹铁道3.7';
    ```
 3. **检查评论数据**:
    ```sql
-   -- 检查评论保存情况
-   SELECT COUNT(*) FROM zhihu_comment WHERE content_id IN (SELECT content_id FROM zhihu_content WHERE source_keyword = '关键词');
-   SELECT COUNT(*) FROM weibo_note_comment WHERE note_id IN (SELECT note_id FROM weibo_note WHERE source_keyword = '关键词');
-   SELECT COUNT(*) FROM tieba_comment WHERE note_id IN (SELECT note_id FROM tieba_note WHERE source_keyword = '关键词');
+   -- 检查评论保存情况 (使用topic_id关联)
+   SELECT COUNT(*) FROM zhihu_comment WHERE content_id IN (SELECT content_id FROM zhihu_content WHERE topic_id = 'star_rail_3_7');
+   SELECT COUNT(*) FROM weibo_note_comment WHERE note_id IN (SELECT note_id FROM weibo_note WHERE topic_id = 'star_rail_3_7');
+   SELECT COUNT(*) FROM tieba_comment WHERE note_id IN (SELECT note_id FROM tieba_note WHERE topic_id = 'star_rail_3_7');
    ```
 4. **检查creator表**: 验证issue中提到的creator表是否为空
    ```sql
@@ -121,6 +152,154 @@ python main.py --platform [platform] --lt qrcode --type search --save_data_optio
    pkill -f "main.py"
    ps aux | grep -E "(chrome.*922[0-9]|main\.py)" | grep -v grep
    ```
+
+## 🗄️ 数据库表结构和查询指南
+
+### 📋 数据库连接信息
+```bash
+# 标准连接方式
+PGPASSWORD=bettafish psql -U bettafish -d bettafish -h 127.0.0.1 -p 5432
+
+# 连接参数说明
+# 用户名: bettafish
+# 密码: bettafish
+# 数据库: bettafish
+# 主机: 127.0.0.1
+# 端口: 5432
+```
+
+### 📊 核心数据表结构
+
+#### 1. 微博主贴表 (weibo_note)
+```sql
+-- 主要字段
+note_id          bigint       -- 微博笔记ID (主键)
+content          text         -- 微博内容
+liked_count      text         -- 点赞数 (文本格式)
+comments_count   text         -- 评论数 (文本格式)
+shared_count     text         -- 转发数 (文本格式)
+source_keyword   text         -- 搜索关键词
+topic_id         varchar(64)  -- 项目关联ID
+create_time      bigint       -- 创建时间戳
+add_ts           bigint       -- 添加时间戳
+```
+
+#### 2. 微博评论表 (weibo_note_comment)
+```sql
+-- 主要字段
+comment_id           bigint       -- 评论ID
+note_id              bigint       -- 关联的微博ID
+content              text         -- 评论内容
+comment_like_count   text         -- 评论点赞数
+parent_comment_id    varchar(255) -- 父评论ID
+create_time          bigint       -- 创建时间戳
+add_ts               bigint       -- 添加时间戳
+```
+
+#### 3. 知乎主贴表 (zhihu_content)
+```sql
+-- 主要字段
+content_id       varchar(64)   -- 知乎内容ID
+title            text          -- 标题
+content_text     text          -- 内容正文
+voteup_count     integer       -- 点赞数
+comment_count    integer       -- 评论数
+source_keyword   text          -- 搜索关键词
+topic_id         varchar(64)   -- 项目关联ID
+created_time     varchar(32)   -- 创建时间
+add_ts           bigint        -- 添加时间戳
+```
+
+#### 4. 知乎评论表 (zhihu_comment)
+```sql
+-- 主要字段
+comment_id        varchar(64)   -- 评论ID
+content_id        varchar(64)   -- 关联的内容ID
+content           text          -- 评论内容
+like_count        integer       -- 点赞数
+parent_comment_id varchar(64)   -- 父评论ID
+publish_time      varchar(32)   -- 发布时间
+add_ts            bigint        -- 添加时间戳
+```
+
+#### 5. 快手视频表 (kuaishou_video)
+```sql
+-- 主要字段
+video_id         varchar(64)   -- 视频ID
+content          text          -- 视频描述
+view_count       text          -- 播放量
+like_count       text          -- 点赞数
+comment_count    text          -- 评论数
+source_keyword   text          -- 搜索关键词
+topic_id         varchar(64)   -- 项目关联ID
+add_ts           bigint        -- 添加时间戳
+```
+
+### 🔍 常用查询模板
+
+#### 统计查询
+```sql
+-- 按项目统计各平台数据量
+SELECT 'weibo' as platform, COUNT(*) as count FROM weibo_note WHERE topic_id = 'star_rail_3_7'
+UNION ALL
+SELECT 'zhihu' as platform, COUNT(*) as count FROM zhihu_content WHERE topic_id = 'star_rail_3_7'
+UNION ALL
+SELECT 'kuaishou' as platform, COUNT(*) as count FROM kuaishou_video WHERE topic_id = 'star_rail_3_7';
+
+-- 统计评论数据
+SELECT 'weibo_comment' as table_name, COUNT(*) as count FROM weibo_note_comment WHERE note_id IN (SELECT note_id FROM weibo_note WHERE topic_id = 'star_rail_3_7')
+UNION ALL
+SELECT 'zhihu_comment' as table_name, COUNT(*) as count FROM zhihu_comment WHERE content_id IN (SELECT content_id FROM zhihu_content WHERE topic_id = 'star_rail_3_7');
+```
+
+#### 内容查看
+```sql
+-- 查看微博主贴 (限制长度便于阅读)
+SELECT note_id, source_keyword, LEFT(content, 80) as content_preview, liked_count, comments_count
+FROM weibo_note WHERE topic_id = 'star_rail_3_7' ORDER BY add_ts DESC LIMIT 5;
+
+-- 查看知乎主贴
+SELECT content_id, source_keyword, LEFT(title, 50) as title_preview, LEFT(content_text, 80) as content_preview, voteup_count, comment_count
+FROM zhihu_content WHERE topic_id = 'star_rail_3_7' ORDER BY add_ts DESC LIMIT 5;
+
+-- 查看微博评论
+SELECT comment_id, note_id, LEFT(content, 60) as comment_preview, comment_like_count
+FROM weibo_note_comment
+WHERE note_id IN (SELECT note_id FROM weibo_note WHERE topic_id = 'star_rail_3_7')
+ORDER BY add_ts DESC LIMIT 5;
+
+-- 查看知乎评论
+SELECT comment_id, content_id, LEFT(content, 60) as comment_preview, like_count
+FROM zhihu_comment
+WHERE content_id IN (SELECT content_id FROM zhihu_content WHERE topic_id = 'star_rail_3_7')
+ORDER BY add_ts DESC LIMIT 5;
+```
+
+#### 表结构查看
+```sql
+-- 查看表结构
+\d weibo_note
+\d weibo_note_comment
+\d zhihu_content
+\d zhihu_comment
+\d kuaishou_video
+```
+
+### ⚠️ 重要注意事项
+
+1. **字段类���差异**:
+   - 微博的数字字段(liked_count等)是text类型
+   - 知乎的数字字段(voteup_count等)是integer类型
+   - 所有ID字段在不同平台可能是bigint或varchar
+
+2. **关联方式**:
+   - 优先使用`topic_id`进行项目级数据查询
+   - 使用`source_keyword`进行关键词级数据查询
+   - 评论通过note_id/content_id与主贴关联
+
+3. **连接参数**:
+   - 必须指定完整连接参数: `-h 127.0.0.1 -p 5432`
+   - 密码通过环境变量传递: `PGPASSWORD=bettafish`
 
 ## 测试结果记录
 
@@ -257,10 +436,10 @@ SELECT * FROM weibo_note_comment ORDER BY add_ts DESC LIMIT 5;
 ### 游戏版本历史数据收集（推荐使用）
 ```bash
 # 大规模深度分析 - 历史版本对比研究（月度执行）
-python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 5 --max-notes 20
+python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 10 --max-notes 20
 
-# 中等规模收集 - 版本稳定期深度分析（每周执行）
-python main.py --deep-sentiment --platforms wb zhihu --max-keywords 3 --max-notes 12
+# 中等规模收集 - 版本稳定期深度分析（每周执行）—— 指定游戏版本的时候就使用这个
+python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 10 --max-notes 12
 
 # 小规模验证 - 版本发布后快速反应（24小时内执行）
 python main.py --deep-sentiment --platforms wb zhihu --max-keywords 2 --max-notes 8
@@ -272,3 +451,129 @@ python main.py --deep-sentiment --platforms wb zhihu --max-keywords 2 --max-note
 - **快手**: 5×20 = 100条视频 + ~2000条评论
 - **总计**: ~250条内容 + ~5000条评论
 - **用时**: 3-5小时
+
+## 📊 关键词存储结构详细说明
+
+### 🎯 核心概念说明
+
+**重要理解**: 不是每个关键词一个记录，而是**一个分析项目一个记录**，包含该项目的所有关键词。
+
+### 📋 daily_topics 表字段详解
+
+以星穹铁道3.9版本为例：
+
+```sql
+INSERT INTO daily_topics (
+    topic_id,           -- 项目唯一标识符
+    topic_name,         -- 项目显示名称
+    keywords,           -- 关键词集合 (JSON格式)
+    topic_description,  -- 项目描述
+    extract_date,       -- 分析日期
+    add_ts,            -- 创建时间戳
+    last_modify_ts     -- 最后修改时间戳
+) VALUES (
+    'star_rail_3_9',   -- 1. topic_id: 项目唯一ID
+    '星穹铁道3.9',     -- 2. topic_name: 项目显示名称
+    '["星穹铁道3.9", "流萤加强", "新角色", "剧情更新", "养成系统"]',  -- 3. keywords: JSON数组
+    '星穹铁道3.9版本相关话题分析',  -- 4. topic_description: 项目描述
+    '2025-11-28',      -- 5. extract_date: 分析日期
+    EXTRACT(EPOCH FROM NOW())::BIGINT,        -- 6. add_ts: 创建时间戳
+    EXTRACT(EPOCH FROM NOW())::BIGINT         -- 7. last_modify_ts: 修改时间戳
+);
+```
+
+### 🔍 每个字段的详细作用
+
+#### **1. topic_id (项目唯一标识符)**
+- **作用**: 关联所有爬虫数据的核心标识
+- **格式**: 自定义，建议使用 `游戏名_版本号` 格式
+- **示例**: `star_rail_3_9`, `genshin_impact_4_0`, `zhihu_daily`
+
+#### **2. topic_name (项目显示名称)**
+- **作用**: 人类可读的项目名称
+- **示例**: `星穹铁道3.9`, `原神4.0版本`, `每日新闻分析`
+
+#### **3. keywords (关键词集合 - 最重要)**
+- **格式**: JSON字符串，存储多个关键词
+- **作用**: 爬虫会依次使用这些关键词在各平台搜索
+- **示例**: `'["星穹铁道3.9", "流萤加强", "新角色", "剧情更新", "养成系统"]'`
+
+#### **4. topic_description (项目描述)**
+- **作用**: 简要说明这个分析项目的内容
+- **示例**: `'星穹铁道3.9版本相关话题分析'`
+
+#### **5. extract_date (分析日期)**
+- **作用**: 标识这个项目的分析日期
+- **格式**: `YYYY-MM-DD`
+
+#### **6-7. 时间戳字段**
+- **add_ts**: 记录创建时间
+- **last_modify_ts**: 最后修改时间
+
+### 🎮 具体使用示例
+
+如果你想分析**星穹铁道3.9版本**，提供**5个关键词**：
+
+1. **你的5个关键词**:
+   - `星穹铁道3.9`
+   - `流萤加强`
+   - `新角色`
+   - `剧情更新`
+   - `养成系统`
+
+2. **数据库存储方式**:
+   ```sql
+   -- 只需要一条记录，包含��有5个关键词
+   INSERT INTO daily_topics (
+       topic_id = 'star_rail_3_9',           -- 一个项目ID
+       keywords = '["星穹铁道3.9", "流萤加强", "新角色", "剧情更新", "养成系统"]'  -- 5个关键词的JSON数组
+   );
+   ```
+
+3. **爬虫执行逻辑**:
+   ```bash
+   # 爬虫会依次用每个关键词搜索
+   关键词1: "星穹铁道3.9" → 爬取微博/知乎/贴吧等平台
+   关键词2: "流萤加强" → 爬取微博/知乎/贴吧等平台
+   关键词3: "新角色" → 爬取微博/知乎/贴吧等平台
+   关键词4: "剧情更新" → 爬取微博/知乎/贴吧等平台
+   关键词5: "养成系统" → 爬取微博/知乎/贴吧等平台
+   ```
+
+4. **最终数据关联**:
+   ```sql
+   -- 所有爬取的数据都会关联到同一个项目
+   SELECT * FROM weibo_note WHERE topic_id = 'star_rail_3_9';  -- 5个关键词的微博数据
+   SELECT * FROM zhihu_content WHERE topic_id = 'star_rail_3_9';  -- 5个关键词的知乎数据
+   ```
+
+### 💡 关键要点
+
+- **1个项目 = 1条记录 = N个关键词**
+- **topic_id是关联枢纽**
+- **keywords字段存储所有搜索词**
+- **source_keyword记录具体用哪个词搜到的**
+
+### 🔗 数据关联工作流程
+
+```
+daily_topics (star_rail_3_9)
+├── weibo_note (5个关键词的微博数据)
+│   ├── source_keyword='星穹铁道3.9' → 10条微博
+│   ├── source_keyword='流萤加强' → 8条微博
+│   ├── source_keyword='新角色' → 12条微博
+│   ├── source_keyword='剧情更新' → 6条微博
+│   └── source_keyword='养成系统' → 4条微博
+├── zhihu_content (5个关键词的知乎数据)
+│   ├── source_keyword='星穹铁道3.9' → 15条知乎
+│   └── ...其他关键词
+└── 其他平台数据...
+```
+
+这样的设计让你能够：
+- **统一管理**: 一个游戏版本的所有相关关键词
+- **灵活分析**: 可以按关键词细分数据来源
+- **数据关联**: 通过topic_id轻松聚合所有相关内容
+- **版本对比**: 不同版本的topic_id可以独立分析
+
+这就是为什么数据库里有不同的topic_id格式：`summary_20251128`(每日热点) vs `star_rail_3_9`(游戏专用)的本质区别！
