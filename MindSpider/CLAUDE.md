@@ -66,15 +66,69 @@ WHERE source_keyword LIKE '%绝区零%' OR source_keyword LIKE '%2.3%';
 -- 绑定星穹铁道3.7相关数据
 UPDATE zhihu_content SET topic_id = 'star_rail_3_7'
 WHERE source_keyword LIKE '%昔涟%' OR source_keyword LIKE '%3.7%';
+
+-- 绑定星穹铁道3.5相关数据（145条高质量内容）
+UPDATE zhihu_content SET topic_id = 'star_rail_3_5'
+WHERE source_keyword LIKE '%3.5%' OR source_keyword LIKE '%英雄未死之前%' OR source_keyword LIKE '%海瑟音%' OR source_keyword LIKE '%刻律德菈%' OR source_keyword LIKE '%卡芙卡银狼%' OR source_keyword LIKE '%黎明%' OR source_keyword LIKE '%黄金迷境大饭店%' OR source_keyword LIKE '%旧瓶新友%';
+
+-- 绑定星穹铁道3.4相关数据（140条深度讨论内容）
+UPDATE zhihu_content SET topic_id = 'star_rail_3_4'
+WHERE source_keyword LIKE '%3.4%' OR source_keyword LIKE '%因为太阳将要毁���%' OR source_keyword LIKE '%白厄%' OR source_keyword LIKE '%Fate联动%' OR source_keyword LIKE '%美梦与圣杯%' OR source_keyword LIKE '%拟似圣杯%' OR source_keyword LIKE '%折纸小鸟%' OR source_keyword LIKE '%银狼刃卡芙卡镜流%' OR source_keyword LIKE '%白厄强度争议%';
 ```
 
 **修复结果**:
 - ✅ 绝区零2.3: 302条数据，100%绑定率
 - ✅ 星穹铁道3.7: 187条数据，100%绑定率
+- ✅ 星穹铁道3.5: 145条数据，100%绑定率（包含43414赞超高质量回答）
+- ✅ 星穹铁道3.4: 140条数据，100%绑定率（包含26366赞深度科学讨论）
 - ✅ 未绑定数据: 0条，已清理完毕
 - ✅ 总体绑定率: 从66.87%提升到100%
 
-### 4. 平台特定问题
+### 4. 知乎平台数据隐藏问题
+**问题**: 知乎平台爬取功能正常，但数据存在于数据库中只是未绑定topic_id，容易被误认为爬取失败
+
+**发现时间**: 2025-11-29
+**典型症状**:
+- 日志显示成功保存: `[store.zhihu.update_zhihu_content]`
+- 数据库查询显示0条新数据
+- 实际上存在大量高质量知乎内容未绑定
+
+**根本原因**:
+1. 知乎爬虫工作正常，成功抓取并保存高质量内容
+2. 数据保存在数据库中，但topic_id字段为NULL
+3. 查询时若只按topic_id筛选，会遗漏这些未绑定的数据
+4. 统计时容易误判为"没有数据"
+
+**解决方案**:
+```sql
+-- 查找未绑定的知乎数据
+SELECT COUNT(*) as unbound_zhihu
+FROM zhihu_content
+WHERE topic_id IS NULL;
+
+-- 按关键词模式识别并绑定相关数据
+UPDATE zhihu_content SET topic_id = 'star_rail_3_X'
+WHERE topic_id IS NULL
+AND (source_keyword LIKE '%3.X%' OR source_keyword LIKE '%相关关键词%');
+
+-- 验证绑定结果
+SELECT COUNT(*) as bound_count
+FROM zhihu_content
+WHERE topic_id = 'star_rail_3_X';
+```
+
+**典型案例**:
+- 星穹铁道3.4: 发现140条高质量内容，包括26366赞的深度讨论
+- 星穹铁道3.5: 发现145条深度内容，包含43414赞的超高赞回答
+- 这些数据若无正确绑定，将完全被统计遗漏
+
+**防范措施**:
+1. 定期检查各平台的NULL topic_id数据量
+2. 按source关键词模式识别相关内容
+3. 建立数据绑定质量监控机制
+4. 统计报告需包含已绑定和待绑定数据
+
+### 5. 平台特定问题
 
 #### 抖音 (Douyin)
 - **状态**: 反爬虫升级，API返回200但数据为空
@@ -436,10 +490,10 @@ SELECT * FROM weibo_note_comment ORDER BY add_ts DESC LIMIT 5;
 ### 游戏版本历史数据收集（推荐使用）
 ```bash
 # 大规模深度分析 - 历史版本对比研究（月度执行）
-python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 10 --max-notes 20
+python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 25 --max-notes 20
 
 # 中等规模收集 - 版本稳定期深度分析（每周执行）—— 指定游戏版本的时候就使用这个
-python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 10 --max-notes 12
+python main.py --deep-sentiment --platforms wb zhihu ks --max-keywords 25 --max-notes 12
 
 # 小规模验证 - 版本发布后快速反应（24小时内执行）
 python main.py --deep-sentiment --platforms wb zhihu --max-keywords 2 --max-notes 8

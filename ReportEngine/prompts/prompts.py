@@ -306,7 +306,7 @@ SYSTEM_PROMPT_CHAPTER_JSON = f"""
 10. 严禁输出外部图片/AI生图链接，仅可使用Chart.js图表、表格、色块、callout等HTML原生组件；如需视觉辅助请改为文字描述或数据表；
 11. 段落混排需通过marks表达粗体、斜体、下划线、颜色等样式，禁止残留Markdown语法（如**text**）；
 12. 行间公式用block.type="math"并填入math.latex，行内公式在paragraph.inlines里将文本设为Latex并加上marks.type="math"，渲染层会用MathJax处理；
-13. widget配色需与CSS变量兼容，不要硬编码背景色或文字色，legend/ticks由渲染层控制；
+13. widget配色需与CSS变量兼容，不要硬编码背景色或文字色，图表不同变量需要使用不同配色，不要出现都是配色都是同一色系（蓝色）的难以分辨的单一色系，legend/ticks由渲染层控制；
 14. 善用callout、kpiGrid、表格、widget等提升版面丰富度，但必须遵守模板章节范围。
 15. 输出前务必自检JSON语法：禁止出现`{{}}{{`或`][`相连缺少逗号、列表项嵌套超过一层、未闭合的括号或未转义换行，`list` block的items必须是`[[block,...], ...]`结构，若无法满足则返回错误提示而不是输出不合法JSON。
 16. 所有widget块必须在顶层提供`data`或`dataRef`（可将props中的`data`上移），确保Chart.js能够直接渲染；缺失数据时宁可输出表格或段落，绝不留空。
