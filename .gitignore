@@ -297,6 +297,7 @@ secrets.json
 *.crt
 config.py
 MindSpider/config.py
+MindSpider/DeepSentimentCrawling/MediaCrawler/config/base_config.py
 
 # API 密钥
 api_keys.txt
@@ -346,3 +347,10 @@ query_engine_streamlit_reports/
 final_reports/
 CLAUDE.md
 MindSpider/CLAUDE.md
+app.log
+app.pid
+crawler.log
+
+# ReportEngine 报告模板目录
+ReportEngine/report_template/
+ReportEngine/report_template copy/

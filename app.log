@@ -1,0 +1,89 @@
+2025-12-05 20:51:47.956 | INFO     | __main__:_patch_eventlet_disconnect_logging:68 - 已对 eventlet 连接中断进行安全防护
+2025-12-05 20:51:47.961 | INFO     | __main__:<module>:75 - ReportEngine接口已注册
+2025-12-05 20:51:47.963 | INFO     | __main__:init_forum_log:346 - ForumEngine: forum.log 已初始化
+2025-12-05 20:51:47.968 | INFO     | __main__:<module>:1149 - 等待配置确认，系统将在前端指令后启动组件...
+2025-12-05 20:51:47.969 | INFO     | __main__:<module>:1150 - Flask服务器已启动，访问地址: http://0.0.0.0:5000
+2025-12-05 20:51:58.495 | INFO     | MindSpider.main:__init__:44 - MindSpider AI爬虫项目
+2025-12-05 20:51:58.495 | INFO     | MindSpider.main:__init__:45 - 项目路径: /home/yancy/all_repo/BettaFish/MindSpider
+2025-12-05 20:51:58.495 | INFO     | MindSpider.main:initialize_database:141 - 初始化数据库...
+2025-12-05 20:51:59.403 | INFO     | MindSpider.main:initialize_database:158 - 数据库初始化成功
+2025-12-05 20:51:59.403 | INFO     | __main__:initialize_system_components:264 - 数据库初始化成功
+2025-12-05 20:51:59.406 | INFO     | __main__:stop_forum_engine:370 - ForumEngine: 停止论坛...
+2025-12-05 20:51:59.406 | INFO     | ForumEngine.monitor:stop_monitoring:727 - ForumEngine: 论坛未运行
+2025-12-05 20:51:59.406 | INFO     | __main__:stop_forum_engine:372 - ForumEngine: 论坛已停止
+2025-12-05 20:51:59.411 | WARNING  | __main__:wait_for_app_startup:760 - insight 健康检查失败: HTTPConnectionPool(host='127.0.0.1', port=8501): Max retries exceeded with url: /_stcore/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1573e5ab90>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-12-05 20:52:00.412 | WARNING  | __main__:wait_for_app_startup:760 - insight 健康检查失败: HTTPConnectionPool(host='127.0.0.1', port=8501): Max retries exceeded with url: /_stcore/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f15734d7f50>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-12-05 20:52:01.419 | WARNING  | __main__:wait_for_app_startup:760 - media 健康检查失败: HTTPConnectionPool(host='127.0.0.1', port=8502): Max retries exceeded with url: /_stcore/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f15734f42d0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-12-05 20:52:02.420 | WARNING  | __main__:wait_for_app_startup:760 - media 健康检查失败: HTTPConnectionPool(host='127.0.0.1', port=8502): Max retries exceeded with url: /_stcore/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f15734f6990>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-12-05 20:52:03.430 | WARNING  | __main__:wait_for_app_startup:760 - query 健康检查失败: HTTPConnectionPool(host='127.0.0.1', port=8503): Max retries exceeded with url: /_stcore/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f15734f7190>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-12-05 20:52:04.466 | INFO     | __main__:start_forum_engine:358 - ForumEngine: 启动论坛...
+2025-12-05 20:52:04.466 | INFO     | ForumEngine.monitor:monitor_logs:586 - ForumEngine: 论坛创建中...
+2025-12-05 20:52:04.467 | INFO     | ForumEngine.monitor:start_monitoring:716 - ForumEngine: 论坛已启动
+2025-12-05 20:52:04.483 | DEBUG    | ReportEngine.agent:_setup_logging:279 - 已添加日志handler (ID: 1): logs/report.log
+2025-12-05 20:52:05.067 | INFO     | ReportEngine.agent:initialize_baseline:115 - 文件数量基准已初始化: {'insight': 20, 'media': 17, 'query': 21}
+2025-12-05 20:52:05.067 | INFO     | ReportEngine.agent:__init__:231 - Report Agent已初始化
+2025-12-05 20:52:05.067 | INFO     | ReportEngine.agent:__init__:232 - 使用LLM: {'provider': 'gemini-2.5-pro', 'model': 'gemini-2.5-pro', 'api_base': 'http://104.224.152.111:3001/v1'}
+2025-12-05 20:52:05.067 | INFO     | ReportEngine.flask_interface:initialize_report_engine:215 - Report Engine初始化成功
+2025-12-05 20:52:05.081 | SUCCESS  | ReportEngine.utils.dependency_check:log_dependency_status:326 - ✓ Pango 依赖检测通过，PDF 导出功能可用
+2025-12-05 20:53:06.520 | INFO     | ForumEngine.monitor:monitor_logs:621 - ForumEngine: 在query中检测到第一次论坛发表内容
+2025-12-05 20:53:06.521 | INFO     | ForumEngine.monitor:clear_forum_log:91 - ForumEngine: forum.log 已清空并初始化
+2025-12-05 20:55:02.788 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 20:55:23.518 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 20:56:53.158 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 20:57:11.894 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 20:58:27.157 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 20:58:48.948 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 21:01:51.373 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 21:02:09.117 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 21:04:31.389 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 21:04:48.117 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 21:07:27.142 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 21:07:42.275 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 21:10:44.492 | INFO     | ForumEngine.monitor:_trigger_host_speech:539 - ForumEngine: 正在生成主持人发言...
+2025-12-05 21:11:04.392 | INFO     | ForumEngine.monitor:_trigger_host_speech:547 - ForumEngine: 主持人发言已记录
+2025-12-05 21:40:27.658 | INFO     | ReportEngine.flask_interface:clear_report_log:1073 - 已清空日志文件: logs/report.log
+2025-12-05 21:40:27.661 | INFO     | ReportEngine.agent:load_input_files:1445 - 已加载 query 报告: 6714 字符
+2025-12-05 21:40:27.661 | INFO     | ReportEngine.agent:load_input_files:1445 - 已加载 media 报告: 155 字符
+2025-12-05 21:40:27.661 | INFO     | ReportEngine.agent:load_input_files:1445 - 已加载 insight 报告: 7167 字符
+2025-12-05 21:40:27.663 | INFO     | ReportEngine.agent:load_input_files:1455 - 已加载论坛日志: 101946 字符
+2025-12-05 21:40:27.663 | INFO     | ReportEngine.agent:generate_report:423 - 开始生成报告 report-594b03ff: 本任务面向《原神》（Genshin Impact）「月之二」版本“『空月之歌·复演』——回望湮灭的月光”。该版本由米哈游 / HoYoverse推出，于2025年10月22日上线，是6.1阶段的更新节点之一，继续推进挪德卡莱相关主线，并以“回望湮灭的月光”为主题展开剧情和活动。你需要作为具备联网能力、并可访问本地舆情数据库的模型，围绕这一版本在中文互联网多平台上的玩家舆论与口碑演变撰写分析报告，核心关注点是玩家讨论与情绪本身，而不是纯数值攻略或公式化配装指南。  在角色与卡池方面，请重点围绕本版本登场的核心五星角色与相关队伍生态。新角色是限定五星草元素角色「湮沙的秘闻·奈芙尔」，使用法器，可通过特定机制帮助队伍触发“月绽放”等新反应体系，是本版本的招牌输出与玩法中枢。与之并行的是多位人气角色的复刻：限定五星水元素角色「不休独舞·芙宁娜」、火元素角色「孤暝厄月·阿蕾奇诺」、岩元素角色「尘世闲游·钟离」在不同阶段的活动祈愿中回归。你需要特别关注玩家围绕“奈芙尔首发 + 芙宁娜 / 阿蕾奇诺 / 钟离复刻”的抽卡抉择、命座取舍、队伍构筑和练度优先级展开的讨论，包括但不限于：奈芙尔在深渊和高难玩法中的实际表现、月绽放体系的上手门槛与收益，芙宁娜在该环境下的依旧统治力或相对回落，阿蕾奇诺与钟离在新环境中的定位与价值等。同时，可以在样本允许的前提下顺带触及行秋、柯莱、瑶瑶等关键四星角色在卡池中的存在感，但不要捏造未在公告或权威媒体中出现的新角色。  在剧情与玩法方面，本版本继续推进“空月之歌”主线的“月之二”阶段，围绕挪德卡莱历史与“湮灭的月光”展开新的故事章节，相关剧情在官方宣传与媒体报道中被强调为“挪德卡莱往事浮现，历史的谜团将影响未来的命运走向”。你需要梳理玩家对“空月之歌·复演”主线剧情、演出节奏、情感表达以及挪德卡莱地区探索体验的整体评价，区分出正面评价（如氛围营造、角色塑造、音乐演出等）与负面声音（如节奏拖沓、谜语人叙事、跑图疲劳等）各自集中的点。同时，本版本引入了UGC系统“千星奇域”，这是一个集游玩、社交和内容创作于一体的新玩法，包含“奇域人偶”“奇域大厅”“千星沙箱”“千星商城”“诸界纪游”“幻夜游烛”活动颂愿以及“奇域盛邀·巧趣醒转”等子模块，是舆论的重要焦点之一。请重点分析玩家对千星奇域在创作自由度、玩法多样性、奖励结构、与大世界关联度上的评价，关注“创意无限”与“与本体割裂”“无原石奖励”之间的矛盾讨论。  你可访问的舆情样本来自由多平台混合而成的本地舆情池，底层数据通常不会可靠地区分平台来源，也不支持按平台精确统计。因此，请不要在报告中尝试做系统性的“按平台对比”，也不要写出“B站玩家整体更满意”“NGA整体倾向更负面”之类看似概括全平台的判断。你可以自然地提及样本中出现的典型场景，例如“某些高赞长评来自官方社区”“部分弹幕在版本PV下集中吐槽某段剧情”，但不要将零散样本上升为对整个站点或平台用户群的总体结论。描述数据来源时，建议使用“多平台玩家讨论”“中文核心游戏社区与内容平台的公开讨论”“各类游戏社区与内容平台的玩家反馈”等模糊集合概念，并默认样本涵盖微博话题与超话、米游社 / HoYoLAB评论区与长评、B站视频及其弹幕和评论、抖音 / 快手等短视频平台、小红书笔记、贴吧与知乎讨论，以及包括NGA在内的其他中文游戏社区。  撰写报告时严禁凭空编造任何精确数字，包括百分比、具体人数、样本条数、播放量或流水数据等。只有在上游工具已经以结构化形式明确提供某个数值（例如“本阶段样本共X条”）时，你才可以原样引用这一事实；即便如此，也应尽量避免进行复杂计算，不要写出“上升X个百分点”“占比达到Y%”之类二次推导的数字。刻画量级时，请使用“多数、少数、部分、大量、极少数”等模糊表述；刻画趋势时，使用“明显增加、略有下降、基本持平、情绪升温、热度冷却”等定性语句即可。不要假设尚未发生的事件；涉及下一阶段“月之三”“空月之歌·间奏”相关讨论时，只能在舆情样本中实际出现了这些内容的前提下，顺带描述“部分讨论开始被新版本预告分流”，但不要反推具体时间点或数值变化。  本次分析的时间范围应从与“月之二”版本相关的爆料、内鬼情报、前瞻特别节目、版本PV和千星奇域网页活动预热阶段开始。前瞻特别节目在10月上旬播出，网页活动“启星之约”等也在版本上线前开启，引导玩家预约、预热千星奇域。从这一阶段算起，一直到本版本中后期主要活动逐步收束、与“空月之歌·复演”直接相关的讨论明显降温、以及“月之三”预告开始成为新的舆论中心为止。请在报告中用自然语言概括这一时间范围，例如“从10月上旬前瞻与预热活动开始，到11月中下旬版本后期及12月初下一版本预热前后”为止，而不要密集罗列具体日期。  请你将全文严格划分为三个时间阶段来组织分析，而不是简单按话题堆叠段落：可以在文中用“阶段A / 阶段B / 阶段C”来指代，但不需要作为显式小标题。阶段A对应版本上线前的爆料与前瞻阶段，从“月之二”前瞻特别节目、版本PV、网页活动开始，一直延续到10月21日维护前夕，重点包含：奈芙尔技能与机制的爆料、月绽放体系在理论层面的强度预期，芙宁娜 / 阿蕾奇诺 / 钟离等复刻角色的卡池预测与排列顺序引发的讨论，对千星奇域UGC系统的期待与担忧，对挪德卡莱后续剧情走向的各种猜测等。阶段B对应版本正式上线及前中期体验阶段，自10月22日更新当日起，重点覆盖上线首两三周，包括奈芙尔与芙宁娜所在上半卡池的抽卡体验与实测强度、空月之歌·复演主线“回望湮灭的月光”章节的剧情口碑、挪德卡莱相关地图与任务的实际体验、千星奇域刚上线时的玩法新鲜感与创作门槛感受、早期战斗与常规活动的反馈等。阶段C对应版本中后期与尾声阶段，大致从下半卡池（涉及阿蕾奇诺、钟离等）开启前后算起，一直持续到“月之二”版本收束、下一版本信息成为讨论新焦点为止，重点关注长线玩法与活动深入后带来的疲劳或稳定期、千星奇域在创作与游玩层面的热度变化、玩家对奈芙尔及整套队伍体系的最终评价、对整个“空月之歌·复演”阶段的复盘与总结。  在每一个阶段中，你至少需要完成以下几类分析。首先，概括该阶段舆论的整体情绪基调，包括期待高涨、谨慎观望、两极分化、前高后低、整体偏正面但集中吐槽某些点等。表达阵营分布时，只能用“多数玩家认为…”“少部分玩家指出…”“出现明显分裂”等模糊说法，而不能给出具体比例。其次，提炼高频议题与关键词，并确保这些议题与本次爬虫关键词中已经覆盖的主题高度对齐，例如：奈芙尔在深渊、危途挑战等内容中的强度与手感、月绽放体系对队伍构成和练度要求的影响，芙宁娜 / 阿蕾奇诺 / 钟离与奈芙尔在抽卡优先级上的对比，挪德卡莱主线与“回望湮灭的月光”情节带来的情感冲击或争议点，千星奇域在UGC创作与社交体验方面的好评与质疑，诸界纪游、幻夜游烛、奇域盛邀·巧趣醒转等活动在奖励、肝度和玩法多样性上的评价，版本强度环境、队伍生态变化，养成压力与氪金体验，以及BUG、优化、服务器稳定性等常见技术问题。  同时，请在每个阶段整理若干具有代表性的正面和负面观点，使用概括与转述的方式呈现，而不是大段引用原文。尽量在叙述中点明这些观点的大致出现场景，例如“前瞻节目弹幕和评论中有不少玩家担心…”，“版本上线首周的奈芙尔测评视频评论区里，大量讨论集中在…”，“版本中后期米游社高赞长评中，有不少复盘整段挪德卡莱剧情的帖子”等，不必精确到具体时间戳或链接。你还需要识别在某些时间节点上引发舆论明显波动的关键事件，并为其标注大致时间定位与舆论走向，例如：奈芙尔技能或数值在测试服与正式服之间存在差异引发的争论、千星奇域创作体验服与正式公测期间口碑的反转或升温、某次严重BUG或紧急维护与补偿公告引发的集中吐槽或好评、特定剧情桥段或角色演出上榜热搜后带来的情绪爆发等。对于这些事件，请用“上线首周”“下半卡池开放后”“版本末期”“千星奇域公测初期”“创作作品爆发阶段”等模糊时间表达，并用“舆论升温、情绪爆发、风向反转、逐渐冷却”等词语描述走势。  在分析过程中，请注意识别对舆论有明显放大效应的内容创作者与KOL，例如播放量较高的奈芙尔深度解析视频作者、被多次引用的长篇剧情评述作者、持续直播或制作“千星奇域”创作教学内容的人气主播等。描述他们时，只需用“某位人气UP主”“一位撰写长文的玩家”“某位直播平台的头部主播”等模糊称呼即可，不要捏造具体ID、粉丝数、播放量或点赞数。  在完成三个阶段的分析之后，请你从时间线维度给出一条清晰的舆论演变脉络：从阶段A的爆料与前瞻期，玩家如何想象“空月之歌·复演”“奈芙尔+月绽放体系”“千星奇域UGC玩法”的潜力；到阶段B实装后的实际体验中，哪些预期得到兑现，哪些地方出现落差甚至反转；再到阶段C中后期的消化与复盘，玩家如何重新评价奈芙尔、复刻角色与千星奇域的长期价值，以及对整个“月之二”版本的情绪归宿。需要特别比较预期与现实之间的错位，例如奈芙尔在爆料期被认为是怎样的强度与功能定位，上线后在真实环境中的实际表现与队伍适配情况是否符合预期，千星奇域从“宣传片里的无限可能”到“实际操作门槛与奖励结构”的态度变化，挪德卡莱主线章节从预告中的氛围渲染到实机体验中的叙事节奏与情感落点等。  最后，请给出对“月之二”版本整体口碑的综合判断。可以使用“整体偏正面但争议点集中在千星奇域奖励结构和月绽放练度门槛”“前期热度很高、体验期出现明显两极分化”“整体评价前高后低”等简洁结论，并用少量关键事实和典型观点支持这一判断，而不是通过虚构精确数值来制造“严谨”的错觉。整体分析必须与本次任务开头所给的关键词保持高度对齐，重点围绕“原神月之二 空月之歌·复演 回望湮灭的月光”“奈芙尔与芙宁娜/阿蕾奇诺/钟离的抽卡抉择与强度争议”“挪德卡莱相关主线剧情与探索体验”“千星奇域及其子系统与活动”“版本整体强度环境、养成与氪金体验、BUG与优化问题”等主题展开。所有专有名词（版本副标题、角色名、地区名、系统名和活动名）都必须以官方公告和权威Wiki等来源为准，对无法确认的具体时间点一律使用模糊表达，除非上游工具已经给出统计结果，否则不要在报告中新增任何精确数值或按平台划分的数字对比。
+2025-12-05 21:40:27.663 | INFO     | ReportEngine.agent:generate_report:424 - 输入数据 - 报告数量: 3, 论坛日志长度: 101946
+2025-12-05 21:40:27.664 | INFO     | ReportEngine.agent:_select_template:724 - 选择报告模板...
+2025-12-05 21:40:27.664 | INFO     | ReportEngine.nodes.template_selection_node:run:56 - 开始模板选择...
+2025-12-05 21:40:27.665 | INFO     | ReportEngine.nodes.template_selection_node:_llm_template_selection:99 - 尝试使用LLM进行模板选择...
+2025-12-05 21:40:43.143 | INFO     | ReportEngine.nodes.template_selection_node:_llm_template_selection:153 - LLM原始响应: ```json
+{
+  "template_name": "游戏版本舆情演变分析报告模板",
+  "selection_reason": "选择此模板的核心原因是用户查询的主题、结构和分析要求与该模板的预设功能高度一致。查询明确要求对一个特定游戏版本（《原神》「月之二」）进行贯穿发布前、中、后期的舆情演变分析，这正是“游戏版本舆情演变分析报告模板”的核心应用场景。该模板能够完美支持按时间线梳理玩家从期待到实际体验的口碑变化，并深入分析角色、剧情、玩法等关键议题，完全满足查询需求。"
+}
+```
+2025-12-05 21:40:43.145 | DEBUG    | ReportEngine.utils.json_parser:parse:122 - 模板选择 JSON解析成功（候选1/1）
+2025-12-05 21:40:43.145 | INFO     | ReportEngine.nodes.template_selection_node:_llm_template_selection:167 - LLM选择模板: 游戏版本舆情演变分析报告模板
+2025-12-05 21:40:43.145 | INFO     | ReportEngine.agent:_select_template:747 - 选择模板: 游戏版本舆情演变分析报告模板
+2025-12-05 21:40:43.146 | INFO     | ReportEngine.agent:_select_template:748 - 选择理由: 选择此模板的核心原因是用户查询的主题、结构和分析要求与该模板的预设功能高度一致。查询明确要求对一个特定游戏版本（《原神》「月之二」）进行贯穿发布前、中、后期的舆情演变分析，这正是“游戏版本舆情演变分析报告模板”的核心应用场景。该模板能够完美支持按时间线梳理玩家从期待到实际体验的口碑变化，并深入分析角色、剧情、玩法等关键议题，完全满足查询需求。
+2025-12-05 21:40:43.156 | INFO     | ReportEngine.flask_interface:event_generator:787 - SSE生成器关闭，停止任务 report_1764942027 推送
+2025-12-05 21:41:38.463 | DEBUG    | ReportEngine.utils.json_parser:parse:122 - 文档设计 JSON解析成功（候选1/1）
+2025-12-05 21:41:38.463 | WARNING  | ReportEngine.utils.json_parser:_extract_and_validate:719 - 文档设计 缺少预期的键: toc
+2025-12-05 21:41:38.464 | INFO     | ReportEngine.nodes.document_layout_node:run:85 - 文档标题/目录设计已生成
+2025-12-05 21:46:38.899 | ERROR    | ReportEngine.llms.base:stream_invoke:140 - 流式请求失败: Error code: 503
+2025-12-05 21:46:38.901 | WARNING  | retry_helper:wrapper:97 - 函数 stream_invoke_to_string 第 1 次尝试失败: Error code: 503
+2025-12-05 21:46:38.901 | INFO     | retry_helper:wrapper:98 - 将在 60.0 秒后进行第 2 次尝试...
+2025-12-05 21:48:50.673 | INFO     | retry_helper:wrapper:79 - 函数 stream_invoke_to_string 在第 2 次尝试后成功
+2025-12-05 21:48:50.677 | DEBUG    | ReportEngine.utils.json_parser:parse:122 - 篇幅规划 JSON解析成功（候选1/1）
+2025-12-05 21:48:50.677 | INFO     | ReportEngine.nodes.word_budget_node:run:82 - 章节字数规划已生成
+2025-12-05 21:48:50.681 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 1.0 版本舆情总体概览
+2025-12-05 21:49:56.939 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 2.0 版本背景与数据边界
+2025-12-05 21:51:21.153 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 3.0 整体声量与情绪趋势
+2025-12-05 21:52:30.496 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 4.0 分阶段舆情演变分析（阶段 A / B / C）
+2025-12-05 21:54:04.861 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 5.0 核心议题与体验维度综述
+2025-12-05 21:55:37.414 | INFO     | ReportEngine.agent:generate_report:542 - 生成章节: 6.0 风险提示与机会点洞察
+2025-12-05 21:56:47.432 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1904 - ============================================================
+2025-12-05 21:56:47.432 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1905 - 图表验证统计
+2025-12-05 21:56:47.432 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1906 - ============================================================
+2025-12-05 21:56:47.432 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1907 - 总图表数量: 5
+2025-12-05 21:56:47.432 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1908 -   ✓ 验证通过: 5 (100.0%)
+2025-12-05 21:56:47.433 | INFO     | ReportEngine.renderers.html_renderer:_log_chart_validation_stats:1929 - ============================================================
+2025-12-05 21:56:47.456 | INFO     | ReportEngine.agent:_save_report:1274 - HTML报告已保存: final_reports/final_report_本任务面向原神Genshin_Impact月之二版本空月之歌_20251205_215647.html
+2025-12-05 21:56:47.457 | INFO     | ReportEngine.agent:_save_report:1275 - Document IR已保存: final_reports/ir/report_ir_本任务面向原神Genshin_Impact月之二版本空月之歌_20251205_215647.json
+2025-12-05 21:56:47.457 | INFO     | ReportEngine.agent:_save_report:1276 - 状态已保存到: final_reports/report_state_本任务面向原神Genshin_Impact月之二版本空月之歌_20251205_215647.json
+2025-12-05 21:56:47.457 | INFO     | ReportEngine.agent:generate_report:693 - 报告生成完成，耗时: 979.79 秒
