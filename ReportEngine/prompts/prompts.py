@@ -202,8 +202,13 @@ SYSTEM_PROMPT_TEMPLATE_SELECTION = f"""
 3. 分析的深度和广度要求
 4. 目标受众和使用场景
 
-可用模板类型：
-- 游戏版本舆情演变分析报告模板：当需要分析特定游戏版本（如新版本发布、重大更新）发布前后的玩家舆论变化、口碑演变和舆情走向时，应选择此模板。核心任务是按时间线分析版本从预期到实际体验的舆情演变过程，重点关注玩家对版本内容、角色强度、活动质量、剧情评价等维度的讨论变化。特别适用于游戏版本更新前后的阶段性舆情分析。
+可用模板类型，推荐使用“社会公共热点事件分析报告模板”：
+- 企业品牌声誉分析报告模板：适用于品牌形象、声誉管理分析当需要对品牌在特定周期内（如年度、半年度）的整体网络形象、资产健康度进行全面、深度的评估与复盘时，应选择此模板。核心任务是战略性、全局性分析。
+- 市场竞争格局舆情分析报告模板：当目标是系统性地分析一个或多个核心竞争对手的声量、口碑、市场策略及用户反馈，以明确自身市场位置并制定差异化策略时，应选择此模板。核心任务是对比与洞察。
+- 日常或定期舆情监测报告模板：当需要进行常态化、高频次（如每周、每月）的舆情追踪，旨在快速掌握动态、呈现关键数据、并及时发现热点与风险苗头时，应选择此模板。核心任务是数据呈现与动态追踪。
+- 特定政策或行业动态舆情分析报告：当监测到重要政策发布、法规变动或足以影响整个行业的宏观动态时，应选择此模板。核心任务是深度解读、预判趋势及对本机构的潜在影响。
+- 社会公共热点事件分析报告模板：当社会上出现与本机构无直接关联，但已形成广泛讨论的公共热点、文化现象或网络流行趋势时，应选择此模板。核心任务是洞察社会心态，并评估事件与本机构的关联性（风险与机遇）。
+- 突发事件与危机公关舆情报告模板：当监测到与本机构直接相关的、具有潜在危害的突发负面事件时，应选择此模板。核心任务是快速响应、评估风险、控制事态。
 
 请按照以下JSON模式定义格式化输出：
 
@@ -301,16 +306,17 @@ SYSTEM_PROMPT_CHAPTER_JSON = f"""
 5. 表格需给出rows/cells/align，KPI卡请使用kpiGrid，分割线用hr。
 6. 如需引用图表/交互组件，统一用widgetType表示（例如chart.js/line、chart.js/doughnut）。
 7. 鼓励结合outline中列出的子标题，生成多层heading与细粒度内容，同时可补充callout、blockquote等。
-8. 如果chapterPlan中包含target/min/max或sections细分预算，请尽量贴合，必要时在notes允许的范围内突破，同时在结构上体现详略；
-9. 一级标题需使用中文数字（“一、二、三”），二级标题使用阿拉伯数字（“1.1、1.2”），heading.text中直接写好编号，与outline顺序对应；
-10. 严禁输出外部图片/AI生图链接，仅可使用Chart.js图表、表格、色块、callout等HTML原生组件；如需视觉辅助请改为文字描述或数据表；
-11. 段落混排需通过marks表达粗体、斜体、下划线、颜色等样式，禁止残留Markdown语法（如**text**）；
-12. 行间公式用block.type="math"并填入math.latex，行内公式在paragraph.inlines里将文本设为Latex并加上marks.type="math"，渲染层会用MathJax处理；
-13. widget配色需与CSS变量兼容，不要硬编码背景色或文字色，图表不同变量需要使用不同配色，不要出现都是配色都是同一色系（蓝色）的难以分辨的单一色系，legend/ticks由渲染层控制；
-14. 善用callout、kpiGrid、表格、widget等提升版面丰富度，但必须遵守模板章节范围。
-15. 输出前务必自检JSON语法：禁止出现`{{}}{{`或`][`相连缺少逗号、列表项嵌套超过一层、未闭合的括号或未转义换行，`list` block的items必须是`[[block,...], ...]`结构，若无法满足则返回错误提示而不是输出不合法JSON。
-16. 所有widget块必须在顶层提供`data`或`dataRef`（可将props中的`data`上移），确保Chart.js能够直接渲染；缺失数据时宁可输出表格或段落，绝不留空。
-17. 任何block都必须声明合法`type`（heading/paragraph/list/...）；若需要普通文本请使用`paragraph`并给出`inlines`，禁止返回`type:null`或未知值。
+8. engineQuote 仅用于呈现单Agent的原话：使用 block.type="engineQuote"，engine 取值 insight/media/query，title 必须固定为对应Agent名字（insight->Insight Agent，media->Media Agent，query->Query Agent，不可自定义），内部 blocks 只允许 paragraph，paragraph.inlines 的 marks 仅可使用 bold/italic（可留空），禁止在 engineQuote 中放表格/图表/引用/公式等；当 reports 或 forumLogs 中有明确的文字段落、结论、数字/时间等可直接引用时，优先分别从 Query/Media/Insight 三个 Agent 摘出关键原文或文字版数据放入 engineQuote，尽量覆盖三类 Agent 而非只用单一来源，严禁臆造内容或把表格/图表改写进 engineQuote。
+9. 如果chapterPlan中包含target/min/max或sections细分预算，请尽量贴合，必要时在notes允许的范围内突破，同时在结构上体现详略；
+10. 一级标题需使用中文数字（“一、二、三”），二级标题使用阿拉伯数字（“1.1、1.2”），heading.text中直接写好编号，与outline顺序对应；
+11. 严禁输出外部图片/AI生图链接，仅可使用Chart.js图表、表格、色块、callout等HTML原生组件；如需视觉辅助请改为文字描述或数据表；
+12. 段落混排需通过marks表达粗体、斜体、下划线、颜色等样式，禁止残留Markdown语法（如**text**）；
+13. 行间公式用block.type="math"并填入math.latex，行内公式在paragraph.inlines里将文本设为Latex并加上marks.type="math"，渲染层会用MathJax处理；
+14. widget配色需与CSS变量兼容，不要硬编码背景色或文字色，legend/ticks由渲染层控制；
+15. 善用callout、kpiGrid、表格、widget等提升版面丰富度，但必须遵守模板章节范围。
+16. 输出前务必自检JSON语法：禁止出现`{{}}{{`或`][`相连缺少逗号、列表项嵌套超过一层、未闭合的括号或未转义换行，`list` block的items必须是`[[block,...], ...]`结构，若无法满足则返回错误提示而不是输出不合法JSON。
+17. 所有widget块必须在顶层提供`data`或`dataRef`（可将props中的`data`上移），确保Chart.js能够直接渲染；缺失数据时宁可输出表格或段落，绝不留空。
+18. 任何block都必须声明合法`type`（heading/paragraph/list/...）；若需要普通文本请使用`paragraph`并给出`inlines`，禁止返回`type:null`或未知值。
 
 <CHAPTER JSON SCHEMA>
 {CHAPTER_JSON_SCHEMA_TEXT}
