@@ -34,6 +34,60 @@
             flex-direction: column;
             border: 2px solid #000000;
             overflow: hidden; /* 防止整体滚动 */
+            position: relative;
+        }
+
+        .page-actions {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .page-action-button {
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 10px 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000000;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease, color 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .page-action-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000000;
+            background-color: #f5f5f5;
+        }
+
+        .page-action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 2px 2px 0 #777777;
+        }
+
+        .page-action-button.refresh {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .page-action-button.shutdown {
+            background-color: #000000;
+            color: #ffffff;
+            border-color: #000000;
+            box-shadow: none;
+        }
+
+        .page-action-button.shutdown:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            transform: none;
+            box-shadow: none;
         }
 
         /* 搜索框区域 */
@@ -181,7 +235,7 @@
         .upload-button input[type="file"] {
             position: absolute;
             left: 0;
-            top: 52px; /* 运行时再用JS同步为app-switcher的真实高度 */
+            top: 0; /* 覆盖整个按钮，确保点击按钮即可触发文件选择 */
             width: 100%;
             height: 100%;
             opacity: 0;
@@ -491,6 +545,23 @@
             align-items: center;
         }
 
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-shutdown-button {
+            padding: 8px 16px;
+            box-shadow: none;
+        }
+
+        .status-shutdown-button:hover,
+        .status-shutdown-button:disabled {
+            box-shadow: none;
+            transform: none;
+        }
+
         .config-modal-overlay {
             position: fixed;
             inset: 0;
@@ -605,6 +676,15 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .config-field.hidden {
+            display: none;
+            opacity: 0;
+            height: 0;
+            margin-bottom: 0;
+            overflow: hidden;
         }
 
         .config-field-label {
@@ -907,6 +987,143 @@
             background-color: #fff0f0;
         }
 
+        /* 系统关机确认弹窗 */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+            padding: 20px;
+        }
+
+        .confirm-overlay.visible {
+            display: flex;
+        }
+
+        .confirm-dialog {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            width: 420px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .confirm-dialog.danger {
+            border-color: #b42318;
+        }
+
+        .confirm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .confirm-dialog.danger .confirm-header {
+            border-color: #b42318;
+        }
+
+        .confirm-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .confirm-close {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-close:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .confirm-body {
+            padding: 16px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .confirm-dialog.danger .confirm-body {
+            border-color: #b42318;
+        }
+
+        .confirm-text {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .confirm-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .confirm-pill {
+            padding: 4px 10px;
+            border: 2px solid #000000;
+            background-color: #f5f5f0;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .confirm-dialog .confirm-button.danger {
+            background-color: #ffecec;
+            color: #b42318;
+        }
+
+        .confirm-dialog .confirm-button.danger:hover {
+            background-color: #ffc9c9;
+            color: #8c1111;
+        }
+
+        .shutdown-pill {
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-subtext {
+            font-size: 12px;
+            color: #555555;
+            line-height: 1.5;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 12px 16px;
+        }
+
+        .confirm-button {
+            padding: 9px 18px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-button:hover {
+            background-color: #f0f0f0;
+        }
+
         /* Forum Engine 专用样式 */
         .forum-container {
             display: none;
@@ -1090,11 +1307,13 @@
 
         .report-controls {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 20px;
             padding: 15px;
             border-bottom: 2px solid #000000;
             background-color: #f8f9fa;
+            flex-wrap: nowrap;
         }
 
         .report-button {
@@ -1105,6 +1324,7 @@
             font-size: 14px;
             font-weight: bold;
             transition: all 0.3s ease;
+            min-height: 44px;
         }
 
         .report-button:hover {
@@ -1123,6 +1343,43 @@
 
         .report-button.primary:hover {
             background-color: #333333;
+        }
+
+        .report-download-group {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .report-download-group .report-button {
+            padding: 10px 14px;
+            min-width: 118px;
+        }
+
+        #downloadPdfButton,
+        #downloadMdButton {
+            padding: 10px 10px;
+            min-width: 96px;
+        }
+
+        @media (max-width: 768px) {
+            .report-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .report-download-group {
+                width: 100%;
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            #downloadPdfButton,
+            #downloadMdButton {
+                min-width: 90px;
+            }
         }
 
         .report-status {
@@ -1322,8 +1579,31 @@
 
         <!-- 状态栏：实时展示WebSocket连接状态与系统时钟 -->
         <div class="status-bar">
-            <span id="connectionStatus">连接中...</span>
-            <span id="systemTime"></span>
+            <div class="status-bar-left">
+                <span id="connectionStatus">连接中...</span>
+                <span id="systemTime"></span>
+            </div>
+            <button class="page-action-button shutdown status-shutdown-button" id="shutdownButton" aria-label="关闭系统">关闭系统</button>
+        </div>
+    </div>
+
+    <div class="confirm-overlay" id="shutdownConfirmModal" aria-hidden="true">
+        <div class="confirm-dialog danger">
+            <div class="confirm-header">
+                <div class="confirm-title" id="shutdownStrongText">确定要关闭系统吗？</div>
+                <button class="confirm-close" id="closeShutdownConfirm" aria-label="关闭系统确认">×</button>
+            </div>
+            <div class="confirm-body">
+                <div class="confirm-text">
+                    <div class="confirm-subtext" id="shutdownSubText">将关闭系统并停止由本控制台启动的子进程，涉及端口/进程：</div>
+                    <div class="confirm-list" id="shutdownRunningList"></div>
+                    <div class="confirm-list" id="shutdownPortList"></div>
+                </div>
+            </div>
+            <div class="confirm-actions">
+                <button class="confirm-button" id="cancelShutdownButton">取消</button>
+                <button class="confirm-button danger" id="confirmShutdownButton">立即关闭系统</button>
+            </div>
         </div>
     </div>
 
@@ -1744,10 +2024,19 @@
             }
         }
 
+        let pageRefreshInProgress = false;
+        let shutdownInProgress = false;
+
         const CONFIG_ENDPOINT = '/api/config';
         const SYSTEM_STATUS_ENDPOINT = '/api/system/status';
         const SYSTEM_START_ENDPOINT = '/api/system/start';
+        const SYSTEM_SHUTDOWN_ENDPOINT = '/api/system/shutdown';
         const START_BUTTON_DEFAULT_TEXT = '保存并启动系统';
+        const APP_PORTS = {
+            insight: 8501,
+            media: 8502,
+            query: 8503
+        };
 
         const configFieldGroups = [
             {
@@ -1821,8 +2110,15 @@
                 title: '外部检索工具',
                 subtitle: '联动搜索引擎、网站抓取等在线服务，两个都需配置',
                 fields: [
+                    {
+                        key: 'SEARCH_TOOL_TYPE',
+                        label: '选择检索工具',
+                        type: 'select',
+                        options: ['BochaAPI', 'AnspireAPI']
+                    },
                     { key: 'TAVILY_API_KEY', label: 'Tavily API Key', type: 'password' },
-                    { key: 'BOCHA_WEB_SEARCH_API_KEY', label: 'Bocha API Key', type: 'password' }
+                    { key: 'BOCHA_WEB_SEARCH_API_KEY', label: 'Bocha API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'BochaAPI' } },
+                    { key: 'ANSPIRE_API_KEY', label: 'Anspire API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'AnspireAPI' } }
                 ]
             }
         ];
@@ -1986,6 +2282,34 @@
                 startSystemButton.addEventListener('click', () => startSystem());
             }
 
+            const refreshPageButton = document.getElementById('pageRefreshButton');
+            if (refreshPageButton) {
+                refreshPageButton.addEventListener('click', () => handleSafeRefresh());
+            }
+
+            const shutdownButton = document.getElementById('shutdownButton');
+            if (shutdownButton) {
+                shutdownButton.addEventListener('click', () => handleShutdownRequest());
+            }
+
+            const cancelShutdownButton = document.getElementById('cancelShutdownButton');
+            if (cancelShutdownButton) {
+                cancelShutdownButton.addEventListener('click', () => hideShutdownConfirm());
+            }
+
+            const closeShutdownButton = document.getElementById('closeShutdownConfirm');
+            if (closeShutdownButton) {
+                closeShutdownButton.addEventListener('click', () => hideShutdownConfirm());
+            }
+
+            const confirmShutdownButton = document.getElementById('confirmShutdownButton');
+            if (confirmShutdownButton) {
+                confirmShutdownButton.addEventListener('click', () => {
+                    hideShutdownConfirm();
+                    shutdownSystem({ skipAgentWarning: true });
+                });
+            }
+
             const configModal = document.getElementById('configModal');
             if (configModal) {
                 configModal.addEventListener('click', (event) => {
@@ -2004,8 +2328,14 @@
             }
 
             document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && isConfigModalVisible()) {
-                    closeConfigModal();
+                if (event.key === 'Escape') {
+                    if (isConfigModalVisible()) {
+                        closeConfigModal();
+                    }
+                    const shutdownModal = document.getElementById('shutdownConfirmModal');
+                    if (shutdownModal && shutdownModal.classList.contains('visible')) {
+                        hideShutdownConfirm();
+                    }
                 }
             });
         }
@@ -2117,6 +2447,17 @@
                     const value = values[field.key] !== undefined ? values[field.key] : '';
                     const safeValue = escapeHtml(String(value || ''));
 
+                    // 检查条件是否满足
+                    let isVisible = true;
+                    let hiddenClass = '';
+                    if (field.condition) {
+                        const conditionKey = field.condition.key;
+                        const conditionValue = field.condition.value;
+                        const currentValue = values[conditionKey];
+                        isVisible = currentValue === conditionValue;
+                        hiddenClass = isVisible ? '' : 'hidden';
+                    }
+
                     let control;
 
                     if (field.type === 'select' && field.options) {
@@ -2180,7 +2521,7 @@
                     }
 
                     return `
-                        <label class="config-field">
+                        <label class="config-field ${hiddenClass}" data-condition-key="${field.condition ? field.condition.key : ''}" data-condition-value="${field.condition ? field.condition.value : ''}">
                             <span class="config-field-label">${field.label}</span>
                             ${control}
                         </label>
@@ -2201,6 +2542,9 @@
             container.innerHTML = sections;
             // 不再需要每次调用 attachConfigPasswordToggles
             // 事件委托已在页面初始化时设置
+            
+            // 为所有 select 下拉框绑定事件，监听值变化并动态显示/隐藏条件字段
+            attachConfigConditionalLogic();
         }
 
         function attachConfigPasswordToggles() {
@@ -2250,6 +2594,51 @@
 
             // 标记已绑定，防止重复
             container.dataset.passwordToggleAttached = 'true';
+        }
+
+        // 【新增】条件字段动态显示逻辑
+        function attachConfigConditionalLogic() {
+            const container = document.getElementById('configFormContainer');
+            if (!container) {
+                return;
+            }
+
+            // 防止重复绑定
+            if (container.dataset.conditionalLogicAttached === 'true') {
+                return;
+            }
+
+            // 监听所有 select 下拉框的变化
+            container.addEventListener('change', (event) => {
+                const select = event.target.closest('select.config-field-input');
+                if (!select) {
+                    return;
+                }
+
+                const triggerKey = select.dataset.configKey;
+                const triggerValue = select.value;
+
+                // 更新所有依赖于这个字段的条件字段的显示状态
+                const conditionalFields = container.querySelectorAll('.config-field[data-condition-key]');
+                conditionalFields.forEach(field => {
+                    const conditionKey = field.dataset.conditionKey;
+                    const conditionValue = field.dataset.conditionValue;
+
+                    // 检查这个条件字段是否依赖于当前改变的字段
+                    if (conditionKey === triggerKey) {
+                        if (triggerValue === conditionValue) {
+                            // 显示字段
+                            field.classList.remove('hidden');
+                        } else {
+                            // 隐藏字段
+                            field.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // 标记已绑定，防止重复
+            container.dataset.conditionalLogicAttached = 'true';
         }
 
         function collectConfigUpdates() {
@@ -2416,6 +2805,154 @@
             } else {
                 applySystemState(status);
                 configModalLocked = false;
+            }
+        }
+
+        function getRunningAgents() {
+            return Object.keys(appStatus).filter(app => appStatus[app] === 'running');
+        }
+
+        function hideShutdownConfirm() {
+            const modal = document.getElementById('shutdownConfirmModal');
+            if (modal) {
+                modal.classList.remove('visible');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        function showShutdownConfirm(runningAgents = []) {
+            const modal = document.getElementById('shutdownConfirmModal');
+            const list = document.getElementById('shutdownRunningList');
+            const portList = document.getElementById('shutdownPortList');
+            const strongText = document.getElementById('shutdownStrongText');
+
+            if (strongText) {
+                strongText.textContent = runningAgents.length > 0
+                    ? '部分 Agent 正在运行，确定要关闭吗？'
+                    : '确定要关闭系统吗？';
+            }
+
+            if (list) {
+                list.innerHTML = '';
+                list.style.display = 'none';
+            }
+
+            if (portList) {
+                const targets = Object.entries(APP_PORTS).map(([key, port]) => {
+                    const status = appStatus[key] || 'unknown';
+                    const label = `${appNames[key] || key}${port ? `:${port}` : ''}`;
+                    const suffix = status === 'running' ? '运行中' : '未运行';
+                    return `<span class="confirm-pill shutdown-pill">${label} · ${suffix}</span>`;
+                });
+                portList.innerHTML = targets.length > 0
+                    ? targets.join('')
+                    : '<span class="confirm-pill">暂无需要关闭的端口</span>';
+            }
+
+            if (modal) {
+                modal.classList.add('visible');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        async function handleSafeRefresh() {
+            if (pageRefreshInProgress) {
+                return;
+            }
+
+            pageRefreshInProgress = true;
+            const refreshButton = document.getElementById('pageRefreshButton');
+            const originalText = refreshButton ? refreshButton.textContent : '';
+            if (refreshButton) {
+                refreshButton.disabled = true;
+                refreshButton.textContent = '刷新中...';
+            }
+
+            try {
+                await fetchSystemStatus();
+                await checkStatus();
+                refreshConsoleOutput();
+                showMessage('已刷新最新状态与日志', 'success');
+            } catch (error) {
+                console.error('刷新页面数据失败', error);
+                showMessage(`刷新失败: ${error.message}`, 'error');
+            } finally {
+                pageRefreshInProgress = false;
+                if (refreshButton) {
+                    refreshButton.disabled = false;
+                    refreshButton.textContent = originalText || '安全刷新';
+                }
+            }
+        }
+
+        async function handleShutdownRequest() {
+            if (shutdownInProgress) {
+                return;
+            }
+
+            if (systemStarting) {
+                showMessage('系统正在启动/重启，请稍后再关闭', 'error');
+                return;
+            }
+
+            const runningAgents = getRunningAgents();
+            if (runningAgents.length > 0) {
+                showShutdownConfirm(runningAgents);
+                return;
+            }
+
+            shutdownSystem({ skipAgentWarning: true });
+        }
+
+        async function shutdownSystem(options = {}) {
+            const { skipAgentWarning = false } = options;
+
+            if (shutdownInProgress) {
+                return;
+            }
+
+            if (!skipAgentWarning) {
+                const runningAgents = getRunningAgents();
+                if (runningAgents.length > 0) {
+                    showShutdownConfirm(runningAgents);
+                    return;
+                }
+            }
+
+            shutdownInProgress = true;
+            const button = document.getElementById('shutdownButton');
+            const originalText = button ? button.textContent : '';
+            if (button) {
+                button.disabled = true;
+                button.textContent = '关闭中...';
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                const response = await fetch(SYSTEM_SHUTDOWN_ENDPOINT, { method: 'POST', signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                const message = '系统正在停止，请稍候...';
+                if (!response.ok) {
+                    throw new Error(`服务返回 ${response.status}`);
+                }
+
+                setConfigStatus(message, 'success');
+                showMessage(message, 'success');
+            } catch (error) {
+                const text = error.name === 'AbortError'
+                    ? '停止指令已发送，请稍候退出'
+                    : `停止失败: ${error.message}`;
+                showMessage(text, error.name === 'AbortError' ? 'success' : 'error');
+
+                if (error.name !== 'AbortError') {
+                    shutdownInProgress = false;
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = originalText || '关闭系统';
+                    }
+                }
             }
         }
 
@@ -4210,8 +4747,11 @@ function getConsoleContainer() {
                 <!-- 控制按钮区域 -->
                 <div class="report-controls">
                     <button class="report-button primary" id="generateReportButton">生成最终报告</button>
-                    <button class="report-button" id="downloadReportButton" disabled>下载HTML</button>
-                    <button class="report-button" id="downloadPdfButton" disabled>下载PDF</button>
+                    <div class="report-download-group">
+                        <button class="report-button" id="downloadReportButton" disabled>下载HTML</button>
+                        <button class="report-button" id="downloadPdfButton" disabled>下载PDF</button>
+                        <button class="report-button" id="downloadMdButton" disabled>下载MD</button>
+                    </div>
                 </div>
                 
                 <!-- 任务进度区域 -->
@@ -4278,6 +4818,7 @@ function getConsoleContainer() {
 
             const downloadButton = document.getElementById('downloadReportButton');
             const downloadPdfButton = document.getElementById('downloadPdfButton');
+            const downloadMdButton = document.getElementById('downloadMdButton');
             if (downloadButton && !downloadButton.dataset.bound) {
                 downloadButton.dataset.bound = 'true';
                 downloadButton.addEventListener('click', () => downloadReport());
@@ -4285,6 +4826,10 @@ function getConsoleContainer() {
             if (downloadPdfButton && !downloadPdfButton.dataset.bound) {
                 downloadPdfButton.dataset.bound = 'true';
                 downloadPdfButton.addEventListener('click', () => downloadPdfFromPreview());
+            }
+            if (downloadMdButton && !downloadMdButton.dataset.bound) {
+                downloadMdButton.dataset.bound = 'true';
+                downloadMdButton.addEventListener('click', () => downloadMarkdownFromIr());
             }
 
             if (reportTaskId) {
@@ -4318,19 +4863,20 @@ function getConsoleContainer() {
         function updateDownloadButtonState(task) {
             const downloadButton = document.getElementById('downloadReportButton');
             const downloadPdfButton = document.getElementById('downloadPdfButton');
-            if (!downloadButton || !downloadPdfButton) return;
+            const downloadMdButton = document.getElementById('downloadMdButton');
+            if (!downloadButton || !downloadPdfButton || !downloadMdButton) return;
 
             const htmlReady = task && task.status === 'completed' && (
                 task.report_file_ready ||
                 task.report_file_path ||
                 task.has_result // 有内容即可允许尝试下载/预览
             );
-            const pdfReady = task && task.status === 'completed' && (
+            const irReady = task && task.status === 'completed' && (
                 task.ir_file_ready ||
-                task.ir_file_path ||
-                task.report_file_ready ||
-                task.report_file_path
+                task.ir_file_path
             );
+            const pdfReady = !!irReady;
+            const mdReady = !!irReady;
 
             if (htmlReady) {
                 downloadButton.disabled = false;
@@ -4340,6 +4886,9 @@ function getConsoleContainer() {
                 downloadButton.textContent = label;
                 downloadPdfButton.disabled = !pdfReady;
                 downloadPdfButton.dataset.taskId = task.task_id;
+                downloadMdButton.disabled = !mdReady;
+                downloadMdButton.dataset.taskId = task.task_id;
+                downloadMdButton.dataset.filename = task.markdown_file_name || '';
                 lastCompletedReportTask = task;
             } else if (!lastCompletedReportTask || (task && task.status !== 'completed')) {
                 downloadButton.disabled = true;
@@ -4348,6 +4897,9 @@ function getConsoleContainer() {
                 downloadButton.textContent = '下载HTML';
                 downloadPdfButton.disabled = true;
                 downloadPdfButton.dataset.taskId = '';
+                downloadMdButton.disabled = true;
+                downloadMdButton.dataset.taskId = '';
+                downloadMdButton.dataset.filename = '';
                 if (!reportTaskId) {
                     lastCompletedReportTask = null;
                 }
@@ -4407,9 +4959,9 @@ function getConsoleContainer() {
             });
         }
 
-        async function downloadPdfFromPreview() {
+        async function downloadPdfFromPreview(taskIdFromCaller = null) {
             const btn = document.getElementById('downloadPdfButton');
-            const taskId = btn?.dataset.taskId;
+            const taskId = taskIdFromCaller || btn?.dataset.taskId || lastCompletedReportTask?.task_id;
 
             if (!taskId) {
                 showMessage('无可用的报告任务，请先生成报告', 'error');
@@ -4460,6 +5012,51 @@ function getConsoleContainer() {
             }
         }
 
+        async function downloadMarkdownFromIr(taskIdFromCaller = null) {
+            const btn = document.getElementById('downloadMdButton');
+            const taskId = taskIdFromCaller || btn?.dataset.taskId || lastCompletedReportTask?.task_id;
+
+            if (!taskId) {
+                showMessage('无可用的报告任务，请先生成报告', 'error');
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            showMessage('正在生成Markdown，请稍候...', 'info');
+
+            try {
+                const response = await fetch(`/api/report/export/md/${taskId}`, { method: 'GET' });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Markdown导出失败');
+                }
+
+                const contentDisposition = response.headers.get('Content-Disposition') || '';
+                let filename = 'report.md';
+                const matches = /filename=\"?([^\";]+)\"?/i.exec(contentDisposition);
+                if (matches && matches[1]) {
+                    filename = matches[1];
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+
+                showMessage('Markdown 导出完成，已开始下载', 'success');
+            } catch (err) {
+                console.error('导出Markdown失败:', err);
+                showMessage('导出Markdown失败: ' + err.message, 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
         // 渲染任务状态（使用新的进度条样式）
         function renderTaskStatus(task) {
             // 状态文本的中文映射
@@ -4477,6 +5074,9 @@ function getConsoleContainer() {
                 'error': 'task-status-error',
                 'pending': 'task-status-running'
             };
+
+            const htmlReady = task.status === 'completed' && (task.report_file_ready || task.report_file_path || task.has_result);
+            const irReady = task.status === 'completed' && (task.ir_file_ready || task.ir_file_path);
             
             // 为运行状态添加加载指示器
             const loadingIndicator = task.status !== 'completed' && task.status !== 'error' 
@@ -4538,7 +5138,6 @@ function getConsoleContainer() {
                 statusHTML += `
                     <div class="task-actions">
                         <button class="report-button primary" onclick="viewReport('${task.task_id}')">重新加载</button>
-                        ${task.report_file_ready ? `<button class="report-button" onclick="downloadReport('${task.task_id}')">下载HTML</button>` : ''}
                     </div>
                 `;
             }

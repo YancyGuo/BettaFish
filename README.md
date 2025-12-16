@@ -8,7 +8,8 @@
 <a href="https://lioncc.ai/" target="_blank"><img src="./static/image/logo_loincc.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
 <a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
 
-<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a>
+<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a>&ensp;
+<a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a>
 
 [![GitHub Stars](https://img.shields.io/github/stars/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/stargazers)
 [![GitHub Watchers](https://img.shields.io/github/watchers/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/watchers)
@@ -80,12 +81,19 @@ LLM模型API赞助：<a href="https://aihubmix.com/?aff=8Ds9" target="_blank"><i
 
 <details>
 <summary>按用量付费的企业级AI资源平台，提供市场上全面的AI模型和API，以及多种在线AI应用：</a><span style="margin-left: 10px"><a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></summary>
-<img src="static/image/banner_302ai_ch.jpg" alt="banner">302.AI是一个按用量付费的企业级AI资源平台，提供市场上最新、最全面的AI模型和API，以及多种开箱即用的在线AI应用。
+<img src="static/image/banner_302ai_ch.jpg" alt="banner">
+302.AI是一个按用量付费的企业级AI资源平台，提供市场上最新、最全面的AI模型和API，以及多种开箱即用的在线AI应用。
 </details>
 
 <details>
 <summary>AI联网搜索、文件解析及网页内容抓取等智能体核心能力提供商：</a><span style="margin-left: 10px"><a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a></summary>
 安思派开放平台(Anspire Open)是面向智能体时代的领先的基础设施提供商。我们为开发者提供构建强大智能体所需的核心能力栈，现已上线AI联网搜索【多版本，极具竞争力的价格】、文件解析【限免】及网页内容抓取【限免】、云端浏览器自动化（Anspire Browser Agent）【内测】、多轮改写等服务，持续为智能体连接并操作复杂的数字世界提供坚实基础。可无缝集成至Dify、Coze、元器等主流智能体平台。通过透明点数计费体系与模块化设计，为企业提供高效、低成本的定制化支持，加速智能化升级进程。
+</details>
+
+<details>
+<summary>免费领取1GB免费试用，企业级全球代理IP与Scraper API解决方案提供商，立即注册：</a><span style="margin-left: 10px"><a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></summary>
+<img src="static/image/banner_thordata.png" height="250" alt="banner">
+Thordata通过高可靠性的代理网络和自动化抓取解决方案，帮助企业轻松获取网络公开数据，并承诺99.9%的正常运行时间与99.7%的成功率。
 </details>
 
 ## 🏗️ 系统架构
@@ -284,6 +292,8 @@ BettaFish/
 ├── docker-compose.yml                      # Docker多服务编排配置
 ├── Dockerfile                              # Docker镜像构建文件
 ├── requirements.txt                        # Python依赖包清单
+├── regenerate_latest_html.py               # 使用最新章节重装订并渲染HTML
+├── regenerate_latest_md.py                 # 使用最新章节重装订并渲染Markdown
 ├── regenerate_latest_pdf.py                # PDF重新生成工具脚本
 ├── report_engine_only.py                   # Report Engine命令行版本
 ├── README.md                               # 中文说明文档
@@ -492,7 +502,7 @@ python main.py --deep-sentiment --platforms xhs dy wb
 
 #### 6.4 命令行报告生成工具
 
-该工具会跳过三个分析引擎的运行阶段，直接读取它们的最新日志文件，并在无需 Web 界面的情况下生成综合报告（同时省略文件增量校验步骤）。通常用于对报告生成结果不满意、需要快速重试的场景，或在调试 Report Engine 时启用。
+该工具会跳过三个分析引擎的运行阶段，直接读取它们的最新日志文件，并在无需 Web 界面的情况下生成综合报告（同时省略文件增量校验步骤），默认会在 PDF 之后自动生成 Markdown（可用参数关闭）。通常用于对报告生成结果不满意、需要快速重试的场景，或在调试 Report Engine 时启用。
 
 ```bash
 # 基本使用（自动从文件名提取主题）
@@ -503,6 +513,9 @@ python report_engine_only.py --query "土木工程行业分析"
 
 # 跳过PDF生成（即使系统支持）
 python report_engine_only.py --skip-pdf
+
+# 跳过Markdown生成
+python report_engine_only.py --skip-markdown
 
 # 显示详细日志
 python report_engine_only.py --verbose
@@ -520,13 +533,19 @@ python report_engine_only.py --help
 5. **自动保存文件**：
    - HTML报告保存到 `final_reports/` 目录
    - PDF报告（如果有依赖）保存到 `final_reports/pdf/` 目录
-   - 文件命名格式：`final_report_{主题}_{时间戳}.html/pdf`
+   - Markdown报告（可用 `--skip-markdown` 关闭）保存到 `final_reports/md/` 目录
+   - 文件命名格式：`final_report_{主题}_{时间戳}.html/pdf/md`
 
 **注意事项：**
 
 - 确保三个引擎目录中至少有一个包含`.md`报告文件
 - 命令行工具与Web界面相互独立，不会相互影响
 - PDF生成需要安装系统依赖，详见上文"安装 PDF 导出所需系统依赖"部分
+
+**快速重渲染最新结果：**
+
+- `regenerate_latest_html.py` / `regenerate_latest_md.py`：从 `CHAPTER_OUTPUT_DIR` 中最新一次运行的章节 JSON 重装订 Document IR，并直接渲染 HTML 或 Markdown。
+- `regenerate_latest_pdf.py`：读取 `final_reports/ir` 里最新的 IR，使用 SVG 矢量图表重新导出 PDF。
 
 ## ⚙️ 高级配置（已过时，已经统一为项目根目录.env文件管理，其他子agent自动继承根目录配置）
 
@@ -576,10 +595,10 @@ SENTIMENT_CONFIG = {
 >from openai import OpenAI
 >
 >client = OpenAI(api_key="your_api_key", 
->                base_url="https://api.siliconflow.cn/v1")
+>                base_url="https://aihubmix.com/v1")
 >
 >response = client.chat.completions.create(
->    model="Qwen/Qwen2.5-72B-Instruct",
+>    model="gpt-4o-mini",
 >    messages=[
 >        {'role': 'user', 
 >         'content': "推理模型会给市场带来哪些新的机会"}

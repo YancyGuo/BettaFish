@@ -354,3 +354,5 @@ crawler.log
 # ReportEngine 报告模板目录
 ReportEngine/report_template/
 ReportEngine/report_template copy/
+
+forward_prs.sh
