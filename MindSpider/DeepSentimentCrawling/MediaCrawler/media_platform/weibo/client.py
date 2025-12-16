@@ -17,8 +17,12 @@ import asyncio
 import copy
 import json
 import re
-from typing import Callable, Dict, List, Optional, Union
+import time
+from typing import Callable, Dict, List, Optional, Union, TYPE_CHECKING
 from urllib.parse import parse_qs, unquote, urlencode
+
+if TYPE_CHECKING:
+    from playwright.async_api import BrowserContext
 
 import httpx
 from httpx import Response
@@ -41,6 +45,7 @@ class WeiboClient:
         headers: Dict[str, str],
         playwright_page: Page,
         cookie_dict: Dict[str, str],
+        browser_context: Optional["BrowserContext"] = None,
     ):
         self.proxy = proxy
         self.timeout = timeout
@@ -49,25 +54,108 @@ class WeiboClient:
         self.playwright_page = playwright_page
         self.cookie_dict = cookie_dict
         self._image_agent_host = "https://i1.wp.com/"
+        self.browser_context = browser_context
+        self._cookie_refresh_lock = asyncio.Lock()
+        self._last_cookie_refresh = 0
+
+    async def _refresh_cookies_from_browser(self) -> bool:
+        """从浏览器刷新Cookie，防止Cookie过期"""
+        if not self.browser_context:
+            utils.logger.warning("[WeiboClient] 无法刷新Cookie: browser_context未设置")
+            return False
+
+        async with self._cookie_refresh_lock:
+            # 防止短时间内多次刷新
+            current_time = time.time()
+            if current_time - self._last_cookie_refresh < 5:
+                utils.logger.info("[WeiboClient] Cookie刷新间隔太短，跳过")
+                return False
+
+            try:
+                utils.logger.info("[WeiboClient] 🔄 正在从浏览器刷新Cookie...")
+
+                # 通过浏览器刷新页面来更新Cookie
+                await self.playwright_page.reload(wait_until="domcontentloaded")
+                await asyncio.sleep(2)
+
+                # 从浏览器获取最新Cookie
+                cookie_str, cookie_dict = utils.convert_cookies(await self.browser_context.cookies())
+                self.headers["Cookie"] = cookie_str
+                self.cookie_dict = cookie_dict
+                self._last_cookie_refresh = current_time
+
+                utils.logger.info(f"[WeiboClient] ✅ Cookie已刷新，新Cookie包含 {len(cookie_dict)} 项")
+                return True
+            except Exception as e:
+                utils.logger.error(f"[WeiboClient] ❌ Cookie刷新失败: {e}")
+                return False
 
     async def request(self, method, url, **kwargs) -> Union[Response, Dict]:
         enable_return_response = kwargs.pop("return_response", False)
-        async with httpx.AsyncClient(proxy=self.proxy) as client:
-            response = await client.request(method, url, timeout=self.timeout, **kwargs)
+        max_retries = 2  # 最多重试2次
 
-        if enable_return_response:
-            return response
+        for attempt in range(max_retries + 1):
+            try:
+                # 构建headers，确保使用最新Cookie
+                request_headers = kwargs.pop("headers", None) or self.headers
 
-        data: Dict = response.json()
-        ok_code = data.get("ok")
-        if ok_code == 0:  # response error
-            utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
-            raise DataFetchError(data.get("msg", "response error"))
-        elif ok_code != 1:  # unknown error
-            utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
-            raise DataFetchError(data.get("msg", "unknown error"))
-        else:  # response right
-            return data.get("data", {})
+                async with httpx.AsyncClient(proxy=self.proxy) as client:
+                    response = await client.request(method, url, timeout=self.timeout, headers=request_headers, **kwargs)
+
+                # ===== DEBUG: 详细记录HTTP响应 =====
+                utils.logger.debug(f"[WeiboClient.request] {method} {url}")
+                utils.logger.debug(f"[WeiboClient.request] Status: {response.status_code}")
+                utils.logger.debug(f"[WeiboClient.request] Headers: {dict(response.headers)}")
+
+                # 检查302重定向
+                if response.status_code == 302:
+                    location = response.headers.get('Location', '')
+                    utils.logger.error(f"[WeiboClient.request] ⚠️ 收到302重定向! Location: {location}")
+                    if 'login' in location or 'signin' in location:
+                        utils.logger.error(f"[WeiboClient.request] ❌ 重定向到登录页面，Cookie可能已失效!")
+                        utils.logger.error(f"[WeiboClient.request] 当前Cookie: {self.cookie_dict}")
+
+                        # 尝试刷新Cookie并重试
+                        if attempt < max_retries and self.browser_context:
+                            utils.logger.info(f"[WeiboClient.request] 🔄 尝试刷新Cookie后重试 (第 {attempt + 1}/{max_retries} 次)")
+                            refreshed = await self._refresh_cookies_from_browser()
+                            if refreshed:
+                                await asyncio.sleep(3)  # 等待一下再重试
+                                continue  # 重试请求
+
+                        raise DataFetchError(f"302重定向到登录页面: {location}")
+                    raise DataFetchError(f"302重定向: {location}")
+
+                # 记录响应body前200字符
+                try:
+                    response_text = response.text[:200]
+                    utils.logger.debug(f"[WeiboClient.request] Response preview: {response_text}")
+                except:
+                    pass
+                # ===== END DEBUG =====
+
+                if enable_return_response:
+                    return response
+
+                data: Dict = response.json()
+                ok_code = data.get("ok")
+                if ok_code == 0:  # response error
+                    utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
+                    raise DataFetchError(data.get("msg", "response error"))
+                elif ok_code != 1:  # unknown error
+                    utils.logger.error(f"[WeiboClient.request] request {method}:{url} err, res:{data}")
+                    raise DataFetchError(data.get("msg", "unknown error"))
+                else:  # response right
+                    return data.get("data", {})
+
+            except DataFetchError:
+                raise  # 直接抛出DataFetchError
+            except Exception as e:
+                if attempt < max_retries:
+                    utils.logger.warning(f"[WeiboClient.request] 请求失败，尝试重试: {e}")
+                    await asyncio.sleep(2)
+                    continue
+                raise
 
     async def get(self, uri: str, params=None, headers=None, **kwargs) -> Union[Response, Dict]:
         final_uri = uri
@@ -86,14 +174,22 @@ class WeiboClient:
     async def pong(self) -> bool:
         """get a note to check if login state is ok"""
         utils.logger.info("[WeiboClient.pong] Begin pong weibo...")
+
+        # ===== DEBUG: 检查Cookie状态 =====
+        utils.logger.debug(f"[WeiboClient.pong] 当前Cookie字典: {self.cookie_dict}")
+        utils.logger.debug(f"[WeiboClient.pong] 当前Headers: {self.headers}")
+        # ===== END DEBUG =====
+
         ping_flag = False
         try:
             uri = "/api/config"
             resp_data: Dict = await self.request(method="GET", url=f"{self._host}{uri}", headers=self.headers)
             if resp_data.get("login"):
                 ping_flag = True
+                utils.logger.info("[WeiboClient.pong] ✅ Cookie有效，已登录")
             else:
                 utils.logger.error(f"[WeiboClient.pong] cookie may be invalid and again login...")
+                utils.logger.error(f"[WeiboClient.pong] 响应数据: {resp_data}")
         except Exception as e:
             utils.logger.error(f"[WeiboClient.pong] Pong weibo failed: {e}, and try to login again...")
             ping_flag = False

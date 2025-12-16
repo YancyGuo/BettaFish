@@ -319,6 +319,7 @@ class WeiboCrawler(AbstractCrawler):
             },
             playwright_page=self.context_page,
             cookie_dict=cookie_dict,
+            browser_context=self.browser_context,  # 传递browser_context用于Cookie刷新
         )
         return weibo_client_obj
 
