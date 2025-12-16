@@ -22,6 +22,16 @@ from ._store_impl import *
 from .bilibilli_store_media import *
 
 
+def clean_text(text):
+    """清理文本中的空字符和其他控制字符"""
+    if text is None:
+        return None
+    if isinstance(text, str):
+        # 移除空字符和控制字符
+        return ''.join(char for char in text if ord(char) >= 32 or char in '\n\r\t')
+    return text
+
+
 class BiliStoreFactory:
     STORES = {
         "csv": BiliCsvStoreImplement,
@@ -48,13 +58,13 @@ async def update_bilibili_video(video_item: Dict):
     save_content_item = {
         "video_id": video_id,
         "video_type": "video",
-        "title": video_item_view.get("title", "")[:500],
-        "desc": video_item_view.get("desc", "")[:500],
+        "title": clean_text(video_item_view.get("title", ""))[:500],
+        "desc": clean_text(video_item_view.get("desc", ""))[:500],
         "create_time": video_item_view.get("pubdate"),
         # user_id 和 liked_count 需要保持为整数类型，匹配数据库 BigInteger/Integer 字段
         "user_id": int(video_user_info.get("mid")) if video_user_info.get("mid") else None,
-        "nickname": video_user_info.get("name"),
-        "avatar": video_user_info.get("face", ""),
+        "nickname": clean_text(video_user_info.get("name")),
+        "avatar": clean_text(video_user_info.get("face", "")),
         "liked_count": int(video_item_stat.get("like", 0)) if video_item_stat.get("like") else None,
         "disliked_count": str(video_item_stat.get("dislike", "")),
         "video_play_count": str(video_item_stat.get("view", "")),
@@ -65,7 +75,7 @@ async def update_bilibili_video(video_item: Dict):
         "video_comment": str(video_item_stat.get("reply", "")),
         "last_modify_ts": utils.get_current_timestamp(),
         "video_url": f"https://www.bilibili.com/video/av{video_id}",
-        "video_cover_url": video_item_view.get("pic", ""),
+        "video_cover_url": clean_text(video_item_view.get("pic", "")),
         "source_keyword": source_keyword_var.get(),
     }
     utils.logger.info(f"[store.bilibili.update_bilibili_video] bilibili video id:{video_id}, title:{save_content_item.get('title')}")
@@ -79,10 +89,10 @@ async def update_up_info(video_item: Dict):
     mid_value = video_item_card.get("mid")
     saver_up_info = {
         "user_id": int(mid_value) if mid_value else None,
-        "nickname": video_item_card.get("name"),
-        "sex": video_item_card.get("sex"),
-        "sign": video_item_card.get("sign"),
-        "avatar": video_item_card.get("face"),
+        "nickname": clean_text(video_item_card.get("name")),
+        "sex": clean_text(video_item_card.get("sex")),
+        "sign": clean_text(video_item_card.get("sign")),
+        "avatar": clean_text(video_item_card.get("face")),
         "last_modify_ts": utils.get_current_timestamp(),
         "total_fans": video_item_card.get("fans"),
         "total_liked": video_item_card_list.get("like_num"),
@@ -117,13 +127,13 @@ async def update_bilibili_video_comment(video_id: str, comment_item: Dict):
         "parent_comment_id": parent_comment_id,
         "create_time": comment_item.get("ctime"),
         "video_id": video_id_int,
-        "content": content.get("message"),
+        "content": clean_text(content.get("message")),
         # user_id 需要保持为字符串类型，匹配数据库 String(255) 字段
         "user_id": str(user_info.get("mid")) if user_info.get("mid") else None,
-        "nickname": user_info.get("uname"),
-        "sex": user_info.get("sex"),
-        "sign": user_info.get("sign"),
-        "avatar": user_info.get("avatar"),
+        "nickname": clean_text(user_info.get("uname")),
+        "sex": clean_text(user_info.get("sex")),
+        "sign": clean_text(user_info.get("sign")),
+        "avatar": clean_text(user_info.get("avatar")),
         "sub_comment_count": str(comment_item.get("rcount", 0)),
         "like_count": like_count,
         "last_modify_ts": utils.get_current_timestamp(),

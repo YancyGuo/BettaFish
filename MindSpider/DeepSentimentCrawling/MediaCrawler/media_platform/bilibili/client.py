@@ -273,12 +273,20 @@ class BilibiliClient(AbstractApiClient):
             if not comments_res:
                 break
 
+            # 🔍 响应诊断日志：检查反爬和数据结构
+            utils.logger.info(f"[BilibiliClient.get_video_all_comments] Response structure for video_id {video_id}: "
+                            f"code={comments_res.get('code')}, "
+                            f"message={comments_res.get('message')}, "
+                            f"data_exists={comments_res.get('data') is not None}, "
+                            f"replies_type={type(comments_res.get('replies'))}, "
+                            f"replies_is_none={comments_res.get('replies') is None}")
+
             cursor_info: Dict = comments_res.get("cursor")
             if not cursor_info:
                 utils.logger.warning(f"[BilibiliClient.get_video_all_comments] Could not find 'cursor' in response for video_id: {video_id}. Skipping.")
                 break
 
-            comment_list: List[Dict] = comments_res.get("replies", [])
+            comment_list: List[Dict] = comments_res.get("replies") or []
 
             # 检查 is_end 和 next 是否存在
             if "is_end" not in cursor_info or "next" not in cursor_info:
@@ -296,8 +304,8 @@ class BilibiliClient(AbstractApiClient):
                     comment_id = comment['rpid']
                     if (comment.get("rcount", 0) > 0):
                         {await self.get_video_all_level_two_comments(video_id, comment_id, CommentOrderType.DEFAULT, 10, crawl_interval, callback)}
-            if len(result) + len(comment_list) > max_count:
-                comment_list = comment_list[:max_count - len(result)]
+            if len(result or []) + len(comment_list) > max_count:
+                comment_list = comment_list[:max_count - len(result or [])]
             if callback:  # 如果有回调函数，就执行回调函数
                 await callback(video_id, comment_list)
             await asyncio.sleep(crawl_interval)
