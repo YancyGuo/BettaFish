@@ -10,6 +10,7 @@ Report Agent主类。
 
 import json
 import os
+import time
 from copy import deepcopy
 from pathlib import Path
 from uuid import uuid4
@@ -707,6 +708,14 @@ class ReportAgent:
                     completion_status['warning'] = 'content_sparse_fallback'
                     completion_status['warningMessage'] = self._CONTENT_SPARSE_WARNING_TEXT
                 emit('chapter_status', completion_status)
+
+                # 在章节生成之间添加延时,避免触发上游API速率限制(429错误)
+                # 跳过最后一个章节,无需等待
+                if completed_chapters < total_chapters:
+                    delay = settings.CHAPTER_GENERATION_DELAY
+                    if delay > 0:
+                        logger.debug(f"等待 {delay} 秒后生成下一章节,避免API速率限制")
+                        time.sleep(delay)
 
             document_ir = self.document_composer.build_document(
                 report_id,

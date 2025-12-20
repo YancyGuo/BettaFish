@@ -66,6 +66,9 @@ class Settings(BaseSettings):
     JSON_ERROR_LOG_DIR: str = Field(
         "logs/json_repair_failures", description="无法修复的JSON块落盘目录"
     )
+    CHAPTER_GENERATION_DELAY: float = Field(
+        3.0, description="章节生成之间的延时(秒),避免触发上游API速率限制"
+    )
 
     class Config:
         """Pydantic配置：允许从.env读取并兼容大小写"""
@@ -100,6 +103,7 @@ def print_config(config: Settings):
     message += f"日志文件: {config.LOG_FILE}\n"
     message += f"PDF 导出: {config.ENABLE_PDF_EXPORT}\n"
     message += f"图表样式: {config.CHART_STYLE}\n"
+    message += f"章节生成延时: {config.CHAPTER_GENERATION_DELAY} 秒\n"
     message += f"LLM API Key: {'已配置' if config.REPORT_ENGINE_API_KEY else '未配置'}\n"
     message += "=========================\n"
     logger.info(message)

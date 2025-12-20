@@ -14,6 +14,11 @@ from loguru import logger
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 
+# 设置HuggingFace离线模式，避免每次加载时联网检查
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
+
 from .llms import LLMClient
 from .nodes import (
     FirstSearchNode,
@@ -96,9 +101,36 @@ class DeepSearchAgent:
         """懒加载聚类模型"""
         if self._clustering_model is None:
             logger.info("  加载聚类模型 (paraphrase-multilingual-MiniLM-L12-v2)...")
-            self._clustering_model = SentenceTransformer(
-                "paraphrase-multilingual-MiniLM-L12-v2"
+
+            # 优先使用本地缓存路径
+            cache_dir = os.path.expanduser("~/.cache/huggingface/hub")
+            local_model_path = os.path.join(
+                cache_dir,
+                "models--sentence-transformers--paraphrase-multilingual-MiniLM-L12-v2"
             )
+
+            try:
+                # 方式1: 直接从本地缓存加载(推荐)
+                if os.path.exists(local_model_path):
+                    logger.info(f"  从本地缓存加载: {local_model_path}")
+                    self._clustering_model = SentenceTransformer(
+                        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+                        cache_folder=cache_dir,
+                        local_files_only=True  # 强制离线模式
+                    )
+                else:
+                    # 方式2: 首次下载(需要联网)
+                    logger.warning("  本地缓存不存在,将从HuggingFace下载模型(需要联网)")
+                    self._clustering_model = SentenceTransformer(
+                        "paraphrase-multilingual-MiniLM-L12-v2"
+                    )
+
+                logger.info("  聚类模型加载成功!")
+
+            except Exception as e:
+                logger.error(f"  聚类模型加载失败: {e}")
+                raise
+
         return self._clustering_model
 
     def _validate_date_format(self, date_str: str) -> bool:

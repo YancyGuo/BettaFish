@@ -10,6 +10,11 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 os.environ['PYTHONUTF8'] = '1'
 os.environ['PYTHONUNBUFFERED'] = '1'  # 禁用Python输出缓冲，确保日志实时输出
 
+# 【新增】设置HuggingFace离线模式，避免加载模型时联网检查
+os.environ.setdefault('HF_HUB_OFFLINE', '1')
+os.environ.setdefault('TRANSFORMERS_OFFLINE', '1')
+os.environ.setdefault('HF_DATASETS_OFFLINE', '1')
+
 import subprocess
 import time
 import threading
