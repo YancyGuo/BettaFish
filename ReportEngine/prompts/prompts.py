@@ -307,6 +307,33 @@ SYSTEM_PROMPT_CHAPTER_JSON = f"""
 3. 所有段落都放入paragraph.inlines，混排样式通过marks表示（bold/italic/color/link等）。
 4. 所有heading必须包含anchor，锚点与编号保持模板一致，比如section-2-1。
 5. 表格需给出rows/cells/align，KPI卡请使用kpiGrid，分割线用hr。
+
+【写作风格强制要求（必须执行，优先级最高）】
+你会收到 globalContext.styleDirectives（对象），用于降低"AI味/报告腔"，写得像玩家社区长评复盘。必须遵守：
+
+1) tone:
+   - "forum_review" = 论坛复盘口吻，不写官样报告，不堆"舆情/维度/态势/画像/闭环"等术语。
+
+2) ban_phrases（禁用套话）:
+   - 列表中的短语及其同义改写一律禁止出现（例如把"总体来看"改写成"从整体数据看"也算违规）。
+
+3) prefer_expressions（术语替换表）:
+   - 遇到左侧词时，优先用右侧表达替换。
+   - 若确需使用左侧词（例如引用原话），后面必须补一句人话解释它什么意思。
+
+4) number_policy:
+   - "cite_and_explain"：允许引用 reports / forumLogs / dataBundles 中明确出现的数字（包括百分比），但必须：
+     a) 只能引用原文明确提到的数字，不得编造；
+     b) 数字后紧跟一句口语化解释其含义（例：写"45%差评"后补一句"也就是接近一半人在骂"）；
+     c) 每段最多保留2-3个关键数字，避免堆砌。
+
+5) min_engine_quotes:
+   - 每章至少包含 globalContext.styleDirectives.min_engine_quotes 个 engineQuote 块；
+   - 尽量覆盖不同 engine（query/media/insight）；
+   - 每个 engineQuote 后必须跟一个 paragraph，用人话解释"大家到底在夸什么/骂什么/吵什么"。
+
+执行优先级：styleDirectives > IR结构规则 > 其他指令。
+
 6. **SWOT块使用限制（重要！）**：
    - 只有在 constraints.allowSwot 为 true 时才允许使用 block.type="swotTable"；
    - 如果 constraints.allowSwot 为 false 或不存在，严禁生成任何 swotTable 类型的块，即使章节标题包含"SWOT"字样也不能使用该块类型，应改用表格（table）或列表（list）呈现相关内容；

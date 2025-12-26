@@ -39,6 +39,56 @@ except ImportError:  # pragma: no cover - 可选依赖
     _json_repair_fn = None
 
 
+# ===== 默认风格指令 =====
+DEFAULT_STYLE_DIRECTIVES = {
+    "tone": "forum_review",
+    "ban_phrases": [
+        "总体来看", "综上所述", "值得注意的是",
+        "从…维度", "呈现出", "进一步", "在此基础上", "不难发现", "形成闭环"
+    ],
+    "prefer_expressions": {
+        "舆情": "玩家反馈",
+        "情绪倾向": "玩家态度",
+        "传播": "传开/扩散",
+        "样本": "抓到的评论/帖子",
+        "画像": "大概什么样",
+        "态势": "趋势/走向",
+        "维度": "方面",
+    },
+    "writing_style": [
+        "短句优先，少用长句套娃",
+        "具体主语（抽卡党/剧情党/强度党/轻度玩家/回坑玩家）",
+        "先结论后证据（结论一句 + 证据/例子一句）",
+        "口语化但不低俗，不要装专家",
+    ],
+    "number_policy": "cite_and_explain",
+    "min_engine_quotes": 2,
+}
+
+
+def merge_style_directives(base: dict, override: dict | None) -> dict:
+    """
+    一层深度合并风格指令。
+
+    对于 dict 类型的值会进行合并，其他类型直接覆盖。
+    这样可以让上游传入部分字段时不会丢失默认配置。
+
+    参数:
+        base: 默认风格指令字典。
+        override: 上游传入的覆盖配置，可为 None。
+
+    返回:
+        dict: 合并后的风格指令。
+    """
+    out = dict(base or {})
+    for k, v in (override or {}).items():
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            out[k] = {**out[k], **v}
+        else:
+            out[k] = v
+    return out
+
+
 class ChapterJsonParseError(ValueError):
     """章节LLM输出无法解析为合法JSON时抛出的异常，附带原始文本方便排查。"""
 
@@ -311,6 +361,12 @@ class ChapterGenerationNode(BaseNode):
         allow_swot = self._get_chapter_swot_permission(section.chapter_id, context)
         allow_pest = self._get_chapter_pest_permission(section.chapter_id, context)
 
+        # 合并默认风格指令与上游传入的配置
+        style_directives = merge_style_directives(
+            DEFAULT_STYLE_DIRECTIVES,
+            context.get("style_directives")
+        )
+
         payload = {
             "section": {
                 "chapterId": section.chapter_id,
@@ -324,7 +380,7 @@ class ChapterGenerationNode(BaseNode):
                 "query": context.get("query"),
                 "templateName": context.get("template_name"),
                 "themeTokens": context.get("theme_tokens", {}),
-                "styleDirectives": context.get("style_directives", {}),
+                "styleDirectives": style_directives,
                 # layout里包含标题/目录/hero等信息，方便章节保持统一视觉调性
                 "layout": context.get("layout"),
                 "templateOverview": context.get("template_overview", {}),
