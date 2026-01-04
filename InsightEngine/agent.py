@@ -37,6 +37,11 @@ from .tools import (
 )
 from .utils import format_search_results_for_prompt
 from .utils.config import Settings, settings
+from utils.anchor_injection import (
+    extract_target_and_aliases,
+    build_llm1_prompt,
+    inject_target_to_content,
+)
 
 ENABLE_CLUSTERING: bool = True  # 是否启用聚类采样
 MAX_CLUSTERED_RESULTS: int = 50  # 聚类后最大返回结果数
@@ -582,11 +587,25 @@ class DeepSearchAgent:
         """生成报告结构"""
         logger.info(f"\n[步骤 1] 生成报告结构...")
 
+        # 构造给LLM1的去噪+锚定prompt
+        llm1_query = build_llm1_prompt(query)
+
         # 创建报告结构节点
-        report_structure_node = ReportStructureNode(self.llm_client, query)
+        report_structure_node = ReportStructureNode(self.llm_client, llm1_query)
 
         # 生成结构并更新状态
         self.state = report_structure_node.mutate_state(state=self.state)
+
+        # 输出后兜底注入（只改content，不动title）
+        target, aliases, version, _meta = extract_target_and_aliases(query)
+        if target:
+            logger.info(f"检测到分析对象: {target}, 别名: {aliases}, 版本: {version}")
+            for paragraph in self.state.paragraphs:
+                paragraph.content = inject_target_to_content(
+                    paragraph.content, target, aliases, version
+                )
+        else:
+            logger.warning("无法从query中提取target_name，段落可能缺少锚点")
 
         _message = f"报告结构已生成，共 {len(self.state.paragraphs)} 个段落:"
         for i, paragraph in enumerate(self.state.paragraphs, 1):

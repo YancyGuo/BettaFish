@@ -102,6 +102,7 @@ celerybeat.pid
 
 # ==== 环境和IDE ====
 # Environments
+app.log
 .env
 .venv
 env/
@@ -111,6 +112,7 @@ env.bak/
 venv.bak/
 conda_env/
 pytorch_python11/
+docs/
 
 # Spyder project settings
 .spyderproject
