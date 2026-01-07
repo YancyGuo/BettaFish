@@ -115,20 +115,40 @@ class DeepSearchAgent:
             )
 
             try:
-                # 方式1: 直接从本地缓存加载(推荐)
+                # 方式1: 直接从本地快照加载(完全离线，避免HF Hub API调用)
                 if os.path.exists(local_model_path):
-                    logger.info(f"  从本地缓存加载: {local_model_path}")
-                    self._clustering_model = SentenceTransformer(
-                        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-                        cache_folder=cache_dir,
-                        local_files_only=True  # 强制离线模式
-                    )
+                    # 查找快照目录
+                    snapshots_dir = os.path.join(local_model_path, "snapshots")
+                    if os.path.exists(snapshots_dir):
+                        snapshots = os.listdir(snapshots_dir)
+                        if snapshots:
+                            # 使用第一个快照（通常只有一个）
+                            snapshot_path = os.path.join(snapshots_dir, snapshots[0])
+                            logger.info(f"  从本地快照加载: {snapshot_path}")
+                            # 关键：直接使用快照路径，而不是模型标识符
+                            # 这样可以完全跳过 HuggingFace Hub API 调用
+                            self._clustering_model = SentenceTransformer(
+                                snapshot_path,
+                                device='cpu'
+                            )
+                        else:
+                            raise FileNotFoundError(f"快照目录为空: {snapshots_dir}")
+                    else:
+                        raise FileNotFoundError(f"快照目录不存在: {snapshots_dir}")
                 else:
                     # 方式2: 首次下载(需要联网)
                     logger.warning("  本地缓存不存在,将从HuggingFace下载模型(需要联网)")
-                    self._clustering_model = SentenceTransformer(
-                        "paraphrase-multilingual-MiniLM-L12-v2"
-                    )
+                    # 临时禁用离线模式以允许下载
+                    old_offline = os.environ.get("HF_HUB_OFFLINE")
+                    os.environ["HF_HUB_OFFLINE"] = "0"
+                    try:
+                        self._clustering_model = SentenceTransformer(
+                            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+                        )
+                    finally:
+                        # 恢复离线模式
+                        if old_offline:
+                            os.environ["HF_HUB_OFFLINE"] = old_offline
 
                 logger.info("  聚类模型加载成功!")
 
