@@ -70,6 +70,14 @@ class Settings(BaseSettings):
         3.0, description="章节生成之间的延时(秒),避免触发上游API速率限制"
     )
 
+    # GraphRAG 配置
+    GRAPHRAG_ENABLED: bool = Field(
+        default=False, description="是否启用GraphRAG知识图谱功能"
+    )
+    GRAPHRAG_MAX_QUERIES: int = Field(
+        default=3, description="GraphRAG每章节查询次数上限"
+    )
+
     class Config:
         """Pydantic配置：允许从.env读取并兼容大小写"""
         env_file = ".env"
